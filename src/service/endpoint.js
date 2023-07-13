@@ -4,7 +4,7 @@ import axios from 'axios';
 // const server_url='https://image-editro-backend.onrender.com';
 
 // const server_url='https://img-v-b.onrender.com/';
-const server_url='http://img-v-b.onrender.com/'
+const server_url='http://img-v-b.onrender.com'
 //user template
 
 export const test=() =>{
