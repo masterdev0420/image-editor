@@ -537,7 +537,6 @@ export default {
       const activeObject = this.canvas.c.getActiveObject(),
         w = activeObject.width * activeObject.scaleX,
         h = activeObject.height * activeObject.scaleY;
-
       activeObject
         .set({
           height: h,
@@ -546,17 +545,17 @@ export default {
           scaleY: 1,
         })
         .setCoords();
-      activeObject._objects[0]
-        .set({
-          height: h,
-          width: w,
-          scaleX: 1,
-          scaleY: 1,
-          left: 0 - (activeObject.width * activeObject.scaleX) / 2,
-          top: 0 - (activeObject.height * activeObject.scaleY) / 2,
-        })
-        .setCoords();
-
+      
+      // activeObject._objects[0]
+      //   .set({
+      //     height: h,
+      //     width: w,
+      //     scaleX: 1,
+      //     scaleY: 1,
+      //     left: 0 - (activeObject.width * activeObject.scaleX) / 2,
+      //     top: 0 - (activeObject.height * activeObject.scaleY) / 2,
+      //   }).setCoords();
+        
       var rectW = activeObject.width;
       var imageW = activeObject._objects[1].width;
       var image_scale_x = rectW / imageW;
@@ -573,8 +572,7 @@ export default {
                 activeObject._objects[1].scaleX) /
                 2,
             top: 0 - (activeObject._objects[1].height * image_scale_x) / 2,
-          })
-          .setCoords();
+          });
         activeObject._objects[1].set("scaleX", image_scale_x).setCoords();
         activeObject._objects[1].set("scaleY", image_scale_x).setCoords();
       } else {
@@ -586,12 +584,13 @@ export default {
                 activeObject._objects[1].scaleX) /
                 2,
             top: 0 - (activeObject._objects[1].height * image_scale_y) / 2,
-          })
-          .setCoords();
+          });
         activeObject._objects[1].set("scaleX", image_scale_y).setCoords();
         activeObject._objects[1].set("scaleY", image_scale_y).setCoords();
       }
-      this.canvas.c.requestRenderAll();
+      
+      console.log(activeObject._objects[1]);
+      this.canvas.c.renderAll();
     },
 
     setLayerShowPeriod() {
@@ -945,9 +944,9 @@ export default {
         var productIndex = objects.findIndex((el) => {
           return el.customType == "productImage";
         });
+        productIndex = productIndex + 1;
         console.log(productIndex);
-        console.log(this.canvas.c)
-        console.log(objects);
+        console.log(objects.length);
         this.canvas.c.remove(this.canvas.c.getActiveObjects()[0]);
         this.canvas.c.add(group);
         this.canvas.c.setActiveObject(group);

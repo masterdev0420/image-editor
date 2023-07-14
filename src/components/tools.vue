@@ -50,6 +50,7 @@ export default {
       dragOption.top = pointerVpt.y;
     });
   },
+
   methods: {
     // Record the type of element currently intended to be created when dragging starts
     onDragend(type) {
@@ -80,7 +81,7 @@ export default {
         ...option,
 	      fontFamily: 'Courier New',
         fontSize: 60,
-        id: uuid(),
+        id: uuid()
       });
       text.set("width",text.width);
       var rect = new fabric.Rect({
@@ -109,6 +110,7 @@ export default {
           positionY:"top"
         },
 		    originPoistion:"left",        
+        objectCaching: false,
       });
       
 	    group.setCoords();
@@ -129,6 +131,7 @@ export default {
       this.canvas.c.add(imgInstance);
       this.canvas.c.renderAll();
     },
+
     addTextBox(option) {
       const text = new this.fabric.Textbox('everything_goes_well', {
         ...defaultPosition,

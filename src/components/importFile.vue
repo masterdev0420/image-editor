@@ -447,6 +447,7 @@ export default {
             const imgInstance = new this.fabric.Image(imgEl, {
               id: "productImage",
               name: 'Product Image',
+              dirty:true
             });
             var rect = new fabric.Rect({
                 height: 0,
@@ -454,7 +455,7 @@ export default {
                 fill: '',
                 strokeWidth:0,
                 opacity: 100,
-                id:"virtural"
+                id:"virtural",
             });      
 
             var group = new fabric.Group([rect, imgInstance]);
@@ -469,6 +470,7 @@ export default {
               bgState:false,
               customType:"productImage",
               left:0-group.width,
+              objectCaching: false,
             });
             
             this.canvas.c.add(group);
@@ -476,11 +478,12 @@ export default {
             rect.set("height",group.height*group.scaleY);
             this.canvas.c.centerObject(group);
             this.canvas.c.setActiveObject(group);
+ 
+            group.setOptions({ dirty: true });
             this.canvas.c.renderAll();
+            // console.log(this.canvas.c.getActiveObject())
             // set zoom
             imgEl.remove();
-
-             
         };          
       }, 100); 
     },    

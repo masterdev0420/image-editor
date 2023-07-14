@@ -579,7 +579,7 @@ export default {
               }  
               // <---------border of rect setting ---------->
           }
-        },      
+        },
         changeFillState(value){
 
           if(value == false){
@@ -588,6 +588,7 @@ export default {
             this.fontAttr.rectFill = '';
             this.canvas.c.renderAll();
           }
+          
         } ,       
         changeBorderState(value){
           if(value == false){
