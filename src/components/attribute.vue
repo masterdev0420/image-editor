@@ -216,7 +216,16 @@
                   v-model="nonBgImageState"
                   @on-change="nonproductImageChange"
                 />
+                
               </div>
+              <div style="float: right">
+                <Switch
+                  size="small"
+                  v-model="trimImageState"
+                  @on-change="trimproductImageChange"
+                />
+                
+              </div>              
             </div>
           </div>
 
@@ -324,7 +333,7 @@ import dele from "./del.vue";
 import clone from "./clone.vue";
 import flip from "./flip.vue";
 import alignImage from "./alignImage.vue";
-import { nonBgImage, trimImage, productImage } from "@/utils/imgConstant";
+import { nonBgImage, trimImage,trimandremove, productImage } from "@/utils/imgConstant";
 import rightHeader from "./rightHeader.vue";
 import shapeType from "./shapeType.vue";
 import textType from "./textType.vue";
@@ -371,6 +380,7 @@ export default {
       isLock: false,
       isView: true,
       nonBgImageState: false,
+      trimImageState:false,
       imageStatus: "",
 
       // common element
@@ -686,6 +696,9 @@ export default {
         return true;
       }
     },
+    trimproductImageChange(evt){
+
+    },
 
     doView(isView) {
       isView ? this.view() : this.unView();
@@ -870,7 +883,6 @@ export default {
         this.canvas.c.renderAll();
       }
     },
-
     insertEmpty(file, bgState) {
       var originLeft = this.canvas.c.getActiveObject().left;
       var originTop = this.canvas.c.getActiveObject().top;
@@ -965,13 +977,33 @@ export default {
   },
   watch: {
     nonBgImageState() {
-      var bgState = this.canvas.c.getActiveObject().bgState;
-      if (bgState == false) {
-        this.insertEmpty(nonBgImage, true);
-      } else {
-        this.insertEmpty(productImage, false);
+      if(this.trimImageState == true && this.nonBgImageState == true){
+        this.insertEmpty(trimandremove, "nonAndTrimImage");
       }
+      if(this.trimImageState == false && this.nonBgImageState == true){
+        this.insertEmpty(nonBgImage, "nonBgImage");
+      } 
+      if(this.trimImageState == true && this.nonBgImageState == false){
+        this.insertEmpty(trimImage, "trimBgImage");
+      }    
+      if(this.trimImageState == false && this.nonBgImageState == false){
+        this.insertEmpty(productImage, "productImage");
+      } 
     },
+    trimImageState(){
+      if(this.trimImageState == true && this.nonBgImageState == true){
+        this.insertEmpty(trimandremove, "nonAndTrimImage");
+      }
+      if(this.trimImageState == false && this.nonBgImageState == true){
+        this.insertEmpty(nonBgImage, "nonBgImage");
+      } 
+      if(this.trimImageState == true && this.nonBgImageState == false){
+        this.insertEmpty(trimImage, "trimBgImage");
+      }    
+      if(this.trimImageState == false && this.nonBgImageState == false){
+        this.insertEmpty(productImage, "productImage");
+      }         
+    }
   },
 };
 </script>

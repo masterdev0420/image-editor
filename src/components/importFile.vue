@@ -59,7 +59,6 @@
               <div  class="col-md-8">
                 <Input suffix="ios-search" placeholder="Enter word for search" v-model="keyword_element"/>
               </div>
-
                 <div class="col-md-4">
                   <b-form-select class="mb-3" v-model="selected_element_type" @change="elementChange" size="sm">
                     <option v-for="item in group_types_element" :value="item" :key="item">{{item}}</option>
@@ -88,7 +87,6 @@
 
   </div>
 </template>
-
 <script>
 
 import { getImgStr, selectFiles} from '@/utils/utils';
@@ -442,8 +440,50 @@ export default {
           const imgEl = document.createElement('img');
           imgEl.src = file || this.imgFile;
           document.body.appendChild(imgEl);
+          // const self =  this.canvas.c;
+          // fabric.Image.fromURL("https://i.ibb.co/tsFmDV6/empty.png", function(imgInstance) {
+          //   imgInstance.set({
+          //     id: "productImage",
+          //     name: 'Product Image',
+          //     dirty:true                
+          //   });
+          //   var rect = new fabric.Rect({
+          //       height: 0,
+          //       width: 0,
+          //       fill: '',
+          //       strokeWidth:0,
+          //       opacity: 100,
+          //       id:"virtural",
+          //   });      
+
+          //   var group = new fabric.Group([rect, imgInstance]);
+          //   group.set({
+          //     id: "productImage",
+          //     item_name:'Product Image',
+          //     layerShowPeriod:{
+          //       mode:'',
+          //       startDate:'',
+          //       endDate:''
+          //     },
+          //     bgState:false,
+          //     customType:"productImage",
+          //     left:0-group.width,
+          //     objectCaching: false,
+          //   });
+            
+          //   self.add(group);
+          //   rect.set("width",group.width*group.scaleX);
+          //   rect.set("height",group.height*group.scaleY);
+          //   self.centerObject(group);
+          //   self.setActiveObject(group);
+
+          //   group.setOptions({ dirty: true });
+          //   self.renderAll();
+          //   }, {
+          //     crossOrigin: "Annoymous"
+          //   });   
+         
           imgEl.onload = () => {
-            // Create a picture object
             const imgInstance = new this.fabric.Image(imgEl, {
               id: "productImage",
               name: 'Product Image',
@@ -467,7 +507,7 @@ export default {
                 startDate:'',
                 endDate:''
               },
-              bgState:false,
+              bgState:"productImage",
               customType:"productImage",
               left:0-group.width,
               objectCaching: false,
@@ -484,7 +524,7 @@ export default {
             // console.log(this.canvas.c.getActiveObject())
             // set zoom
             imgEl.remove();
-        };          
+          };          
       }, 100); 
     },    
     

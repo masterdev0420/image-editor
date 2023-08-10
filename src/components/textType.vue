@@ -789,7 +789,7 @@ export default {
               const includesValue = values.includes(searchValue);         
               var stringforBuffer = new Uint8Array(fontBuffer).reduce(function (accumulator, value) {
                 return accumulator + String.fromCharCode(value);
-              }, '');                   
+              }, '');                              
               if(!includesValue){
                 window.globalFonts.push({
                   name:fontName,

@@ -489,7 +489,7 @@ class Editor extends EventEmitter {
           });          
             
         }, 2000);
-        });  
+      });  
         
         
     });
