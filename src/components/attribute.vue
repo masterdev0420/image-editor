@@ -226,7 +226,7 @@
               class=""
               style="height: 40px; margin-right: 15px"
             >
-            
+
             <div style="float: left">Trim background</div>
             <div style="float: right">
             <Switch
@@ -960,6 +960,7 @@ export default {
           layerShowPeriod: layerShowPeriod,
           angle: angle,
           customType: "productImage",
+          objectCaching: false,
         });
 
         var objects = this.canvas.c.getObjects();
