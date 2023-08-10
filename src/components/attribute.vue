@@ -217,16 +217,26 @@
                   @on-change="nonproductImageChange"
                 />
                 
-              </div>
-              <div style="float: right">
-                <Switch
-                  size="small"
-                  v-model="trimImageState"
-                  @on-change="trimproductImageChange"
-                />
-                
-              </div>              
+              </div>            
             </div>
+            <div
+              v-if="
+                baseAttr.id === 'productImage' || baseAttr.id === 'nonBgImage'
+              "
+              class=""
+              style="height: 40px; margin-right: 15px"
+            >
+            
+            <div style="float: left">Trim background</div>
+            <div style="float: right">
+            <Switch
+              size="small"
+              v-model="trimImageState"
+              @on-change="trimproductImageChange"
+            />
+            
+          </div>           
+            </div>            
           </div>
 
           <div class="mt-4" style="height: 30px; margin-right: 15px">
