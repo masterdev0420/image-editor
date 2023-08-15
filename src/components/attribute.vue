@@ -359,6 +359,7 @@ import rightHeader from "./rightHeader.vue";
 import shapeType from "./shapeType.vue";
 import textType from "./textType.vue";
 import group from "./group.vue";
+import { fabric } from "fabric";
 
 const lockAttrs = [
   "lockMovementX",
@@ -1026,6 +1027,7 @@ export default {
     insertEmpty(file, bgState) {
       var id = this.canvas.c.getActiveObject().id;
       var customType = this.canvas.c.getActiveObject().customType;
+      console.log(this.canvas.c.getActiveObject())
 
       var originLeft = this.canvas.c.getActiveObject().left;
       var originTop = this.canvas.c.getActiveObject().top;
@@ -1045,12 +1047,11 @@ export default {
       var imageTop = this.canvas.c.getActiveObject()._objects[1].top;
       var imageScaleX = this.canvas.c.getActiveObject()._objects[1].scaleX;
       var imageScaleY = this.canvas.c.getActiveObject()._objects[1].scaleY;
-      
+
       var item_name = this.canvas.c.getActiveObject().item_name;
       var angle = this.canvas.c.getActiveObject().angle;
       var opacity = this.canvas.c.getActiveObject().opacity;
-      var layerShowPeriod = this.canvas.c.getActiveObject().layerShowPeriod;
-
+      var layerShowPeriod = this.canvas.c.getActiveObject().layerShowPeriod;            
       var position = this.canvas.c.getActiveObject().position;
       var originPoistion = this.canvas.c.getActiveObject().originPoistion;
       const imgEl = document.createElement("img");
@@ -1058,15 +1059,64 @@ export default {
       document.body.appendChild(imgEl);
       imgEl.onload = () => {
         // Create a product image
-        const imgInstance = new this.fabric.Image(imgEl, {
-          id: id,
-          item_name: item_name,
-          left: imageLeft,
-          top: imageTop,
-          scaleX: imageScaleX,
-          scaleY: imageScaleY,
-          opacity: opacity,
-        });
+        if(customType == "extra_product"){
+          console.log(this.canvas.c.getActiveObject()._objects[1]._objects[0])
+          var tempImageLeft = this.canvas.c.getActiveObject()._objects[1]._objects[0].left;
+          var tempImageTop = this.canvas.c.getActiveObject()._objects[1]._objects[0].top;
+          var tempImageScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleX;
+          var tempImageScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleY;
+
+          var textLeft = this.canvas.c.getActiveObject()._objects[1]._objects[1].left;
+          var textTop = this.canvas.c.getActiveObject()._objects[1]._objects[1].top;
+          var textScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleX;
+          var textScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleY;        
+
+          var item_name = this.canvas.c.getActiveObject().item_name;
+          var tempImage = new this.fabric.Image(imgEl, {
+            id: id,
+            item_name: item_name,
+            left: tempImageLeft,
+            top: tempImageTop,
+            scaleX: tempImageScaleX,
+            scaleY: tempImageScaleY
+          });
+
+          var text = new this.fabric.IText(item_name, {
+            fontFamily: 'Courier New',
+            fontSize: 20,
+            fontWeight:"bold",
+            fontColor:"white",
+            left:textLeft,
+            top:textTop,
+            scaleX:textScaleX,
+            scralY:textScaleY,                
+          });          
+
+          var imgInstance = new this.fabric.Group([tempImage, text]);
+          console.log(imgInstance)
+          imgInstance.set({
+            id: id,
+            item_name: item_name,
+            left: imageLeft,
+            top: imageTop,
+            scaleX: imageScaleX,
+            scaleY: imageScaleY,
+            opacity: opacity,
+          });          
+        }
+
+        if(customType == "productImage"){
+    
+          var imgInstance = new this.fabric.Image(imgEl, {
+            id: id,
+            item_name: item_name,
+            left: imageLeft,
+            top: imageTop,
+            scaleX: imageScaleX,
+            scaleY: imageScaleY,
+            opacity: opacity,
+          });
+        }
 
         var rect = new fabric.Rect({
           left: rectLeft,
