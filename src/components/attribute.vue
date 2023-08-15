@@ -1027,7 +1027,6 @@ export default {
     insertEmpty(file, bgState) {
       var id = this.canvas.c.getActiveObject().id;
       var customType = this.canvas.c.getActiveObject().customType;
-      console.log(this.canvas.c.getActiveObject())
 
       var originLeft = this.canvas.c.getActiveObject().left;
       var originTop = this.canvas.c.getActiveObject().top;
@@ -1060,7 +1059,6 @@ export default {
       imgEl.onload = () => {
         // Create a product image
         if(customType == "extra_product"){
-          console.log(this.canvas.c.getActiveObject()._objects[1]._objects[0])
           var tempImageLeft = this.canvas.c.getActiveObject()._objects[1]._objects[0].left;
           var tempImageTop = this.canvas.c.getActiveObject()._objects[1]._objects[0].top;
           var tempImageScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleX;
@@ -1093,7 +1091,6 @@ export default {
           });          
 
           var imgInstance = new this.fabric.Group([tempImage, text]);
-          console.log(imgInstance)
           imgInstance.set({
             id: id,
             customType:customType,

@@ -78,8 +78,6 @@ export default {
     },
     flip(type) {
       const activeObject = this.canvas.c.getActiveObject();
-      console.log(`flip${type}`);
-      console.log(!activeObject[`flip${type}`])
       activeObject.set(`flip${type}`, !activeObject[`flip${type}`]).setCoords();
       this.canvas.c.requestRenderAll();
     },

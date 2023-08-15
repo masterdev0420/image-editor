@@ -43,7 +43,6 @@ export const getPreviewImage = (keyword) =>{
 }
 
 export const getAllDefaultImages = () =>{
-    console.log("ddd")
     return axios.get(server_url+"/product/get-all-default-images");
 }
 
