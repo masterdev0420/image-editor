@@ -111,7 +111,7 @@
                 <img v-bind:src="item.image_url" style="width:150px;height:150px;" id="images0"/>
                 <div><span style="color:red;font-weight:bold">{{item.name}}</span></div>
               </div>
-              <div v-if="item.active === false" class="image-box" imgId = {{item.id}} @click="()=>insertProduct(item)" style="background-color: #c7c7c7;">
+              <div v-if="item.active === false" class="image-box" imgId = {{item.id}} style="background-color: #c7c7c7;cursor:no-drop">
                 <img v-bind:src="item.image_url" style="width:150px;height:150px;" id="images0"/>
                 <div><span style="color:red;font-weight:bold">{{item.name}}</span></div>
               </div>
@@ -547,7 +547,7 @@ export default {
                 fontFamily: 'Courier New',
                 fontSize: 20,
                 fontWeight:"bold",
-                fontColor:"white"
+                fill:"white"
               });
 
               // Set the text's position to the center of the image

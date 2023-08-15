@@ -149,6 +149,7 @@
               this.canvas.c.renderAll();
               }
           });
+          
           activeObject.set('position',{positionX:"left",positionY:activeObject?activeObject.position.positionY * activeObject.scaleY:-(activeObject.height*activeObject.scaleY / 2)});
           activeObject.originPoistion = "left";        
         }

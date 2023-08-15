@@ -1085,7 +1085,7 @@ export default {
             fontFamily: 'Courier New',
             fontSize: 20,
             fontWeight:"bold",
-            fontColor:"white",
+            fill:"white",
             left:textLeft,
             top:textTop,
             scaleX:textScaleX,
@@ -1096,6 +1096,7 @@ export default {
           console.log(imgInstance)
           imgInstance.set({
             id: id,
+            customType:customType,
             item_name: item_name,
             left: imageLeft,
             top: imageTop,
