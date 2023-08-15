@@ -204,7 +204,7 @@
           <div>
             <div
               v-if="
-                baseAttr.id === 'productImage' || baseAttr.id === 'nonBgImage'
+                baseAttr.id === 'productImage' || baseAttr.id === 'nonBgImage' || baseAttr.customType === 'extra_product'
               "
               class=""
               style="height: 40px; margin-right: 15px"
@@ -221,7 +221,7 @@
             </div>
             <div
               v-if="
-                baseAttr.id === 'productImage' || baseAttr.id === 'nonBgImage'
+                baseAttr.id === 'productImage' || baseAttr.id === 'nonBgImage' || baseAttr.customType === 'extra_product'
               "
               class=""
               style="height: 40px; margin-right: 15px"
@@ -241,8 +241,18 @@
 
           <div class="mt-4" style="height: 30px; margin-right: 15px">
             <div class="" style="float: left">Alignment</div>
-            <div class="" style="float: right">
+            <div class="" style="float: right" v-if="baseAttr.id !== 'productImage' && baseAttr.customType !== 'extra_product'">
               <align-image></align-image>
+            </div>
+            <div v-if="baseAttr.customType === 'productImage' || baseAttr.id === 'nonBgImage' || baseAttr.customType === 'extra_product'" >
+              <div class="mt-3" style="height:40px;">
+                <div class="" style="float:left;">
+                  Alignment
+                </div>           
+                <div class="" style="float:right;">
+                  <align-product></align-product>
+                </div>
+              </div>              
             </div>
           </div>
         </div>
@@ -343,6 +353,7 @@ import dele from "./del.vue";
 import clone from "./clone.vue";
 import flip from "./flip.vue";
 import alignImage from "./alignImage.vue";
+import alignProduct from "./alignProduct.vue";
 import { nonBgImage, trimImage,trimandremove, productImage } from "@/utils/imgConstant";
 import rightHeader from "./rightHeader.vue";
 import shapeType from "./shapeType.vue";
@@ -368,6 +379,7 @@ export default {
     flip,
     alignImage,
     rightHeader,
+    alignProduct,
     shapeType,
     textType,
     group,
@@ -466,15 +478,29 @@ export default {
   created() {
     this.canvas.c.on("object:scaling", (opt) => {
       var activeObject = this.canvas.c.getActiveObject();
-      if (activeObject.customType == "productImage") {
+      var target = opt.target;
+      var pointer = this.canvas.c.getPointer(opt.e);      
+      if (target && target.id === "productImage" && pointer.x !== target.left && pointer.y !== target.top || target.customType === "extra_product") {
+        var scaleXChange = (pointer.x - target.left) / target.width;
+        var scaleYChange = (pointer.y - target.top) / target.height;
+        target.lockScalingFlip = true;
+        target.set({
+          scaleX: scaleXChange,
+          scaleY: scaleYChange,
+        });
+        target.setCoords(); // Update the object's coordinates
+      }            
+  
+      if (activeObject.customType == "productImage" || activeObject.customType == "extra_product" ) {
         this.controlProductImage();
+        this.fixTextPosition();
       }
     }),
-      this.event.on("selectUpdate", () => {
-        if (this.canvas.c.getActiveObject().name == "picture") {
-          this.canvas.c.getActiveObject().clipState = this.imageShowMode;
-        }
-      });
+    this.event.on("selectUpdate", () => {
+      if (this.canvas.c.getActiveObject().name == "picture") {
+        this.canvas.c.getActiveObject().clipState = this.imageShowMode;
+      }
+    });
 
     this.event.on("selectOne", (items) => {
       this.isLock = !items[0].hasControls;
@@ -484,6 +510,7 @@ export default {
       if (activeObject) {
         // base
         this.baseAttr.id = activeObject.id;
+        this.baseAttr.customType = activeObject.customType;
         this.baseAttr.item_name = activeObject.item_name;
         this.baseAttr.round = activeObject.get("rx");
         this.baseAttr.height = activeObject.get("height");
@@ -533,6 +560,27 @@ export default {
           this.fontAttr.fontWeight = textObj.get("fontWeight");
           this.fontAttr.selected_fontfamily = textObj.fontFamily;
 
+          if(activeObject.customType == "productImage" || activeObject.customType == "extra_product"){
+            switch(activeObject.bgState){
+              case "productImage" : 
+                this.nonBgImageState = false;
+                this.trimImageState = false;
+                break;
+              case "nonAndTrimImage" : 
+                this.nonBgImageState = true;
+                this.trimImageState = true;
+                break;
+              case "nonBgImage": 
+                this.nonBgImageState = true;
+                this.trimImageState = false;
+                break;
+              case "trimBgImage" : 
+                this.nonBgImageState = false;
+                this.trimImageState = true;                               
+                break;
+            }
+          }
+
           // //layerRestricion
           this.setLayerShowPeriod();
           setTimeout(() => {
@@ -563,19 +611,8 @@ export default {
           width: w,
           scaleX: 1,
           scaleY: 1,
-        })
-        .setCoords();
+        }).setCoords();
       
-      // activeObject._objects[0]
-      //   .set({
-      //     height: h,
-      //     width: w,
-      //     scaleX: 1,
-      //     scaleY: 1,
-      //     left: 0 - (activeObject.width * activeObject.scaleX) / 2,
-      //     top: 0 - (activeObject.height * activeObject.scaleY) / 2,
-      //   }).setCoords();
-        
       var rectW = activeObject.width;
       var imageW = activeObject._objects[1].width;
       var image_scale_x = rectW / imageW;
@@ -609,10 +646,103 @@ export default {
         activeObject._objects[1].set("scaleY", image_scale_y).setCoords();
       }
       
-      console.log(activeObject._objects[1]);
       this.canvas.c.renderAll();
     },
+    fixTextPosition(){
+          const activeObject =this.canvas.c.getActiveObject();
+         
+          if(activeObject.customType == "productImage" || activeObject.customType == "extra_product"){
 
+            const w = activeObject.width * activeObject.scaleX,
+            h = activeObject.height * activeObject.scaleY
+
+            activeObject.set({
+              'height'     : h,
+              'width'      : w,
+              'scaleX'     : 1,
+              'scaleY'     : 1,
+            });
+            
+            activeObject._objects[0].set({
+              'height'     : h,
+              'width'      : w,
+              'scaleX'     : 1,
+              'scaleY'     : 1,
+              "left":0 - (activeObject.width) / 2,
+              "top":0 - (activeObject.height) / 2
+            });
+            var rectW = activeObject.width;
+            var textW = activeObject._objects[1].width ;           
+            var textS = rectW/textW;
+            if(textW>rectW){
+            //   activeObject.set({
+            //       position:{
+            //         "positionX":"left",
+            //         "positionY":activeObject.position.positionY
+            //       }
+            //   });									
+            //   activeObject._objects[1].set("scaleX",textS);
+            //   activeObject._objects[1].set("scaleY",textS);			
+            }else{
+
+              if(activeObject.originPoistion == "right"){
+                activeObject.set({
+                    position:{
+                      "positionX":"right",
+                      "positionY":activeObject.position.positionY
+                    }
+                });                      
+              }		              
+              if(activeObject.originPoistion == "xCenter"){
+                activeObject.set({
+                    position:{
+                      "positionX":"xCenter",
+                      "positionY":activeObject.position.positionY
+                    }
+                });                
+              }
+	
+              if(textS <= 1){
+                activeObject._objects[1].set("scaleX",textS).setCoords();
+                activeObject._objects[1].set("scaleY",textS).setCoords();	
+              }			
+            }
+            var position = this.canvas.editor.getPosition(activeObject);
+            if(activeObject.position.positionX == "right"){
+              activeObject._objects[1].set({
+                "left":position.left,
+                "top":position.top
+              });				
+            }
+
+            if(activeObject.position.positionX == "left"){
+              activeObject._objects[1].set({
+                "left":position.left,
+                "top":position.top
+              });				
+            }	
+
+            if(activeObject.position.positionX == "xCenter"){
+              activeObject._objects[1].set({
+                "left":position.left,
+                "top":position.top
+              });				
+            }			
+            if(activeObject.position.positionY == "top"){
+              activeObject._objects[1].top = position.top
+            }
+
+            if(activeObject.position.positionY == "bottom"){
+              activeObject._objects[1].top = position.top
+            }	
+
+            if(activeObject.position.positionY == "yCenter"){
+              activeObject._objects[1].top = position.top
+            }
+           this.canvas.c.renderAll();
+          }            
+        },        
+        
     setLayerShowPeriod() {
       var state = this.baseAttr.layerShowPeriod;
 
@@ -894,6 +1024,9 @@ export default {
       }
     },
     insertEmpty(file, bgState) {
+      var id = this.canvas.c.getActiveObject().id;
+      var customType = this.canvas.c.getActiveObject().customType;
+
       var originLeft = this.canvas.c.getActiveObject().left;
       var originTop = this.canvas.c.getActiveObject().top;
       var originHeight = this.canvas.c.getActiveObject().height;
@@ -910,23 +1043,23 @@ export default {
 
       var imageLeft = this.canvas.c.getActiveObject()._objects[1].left;
       var imageTop = this.canvas.c.getActiveObject()._objects[1].top;
-      var imageHeight = this.canvas.c.getActiveObject()._objects[1].height;
-      var imageWidth = this.canvas.c.getActiveObject()._objects[1].width;
       var imageScaleX = this.canvas.c.getActiveObject()._objects[1].scaleX;
       var imageScaleY = this.canvas.c.getActiveObject()._objects[1].scaleY;
-
+      
       var item_name = this.canvas.c.getActiveObject().item_name;
       var angle = this.canvas.c.getActiveObject().angle;
       var opacity = this.canvas.c.getActiveObject().opacity;
       var layerShowPeriod = this.canvas.c.getActiveObject().layerShowPeriod;
 
+      var position = this.canvas.c.getActiveObject().position;
+      var originPoistion = this.canvas.c.getActiveObject().originPoistion;
       const imgEl = document.createElement("img");
       imgEl.src = file;
       document.body.appendChild(imgEl);
       imgEl.onload = () => {
         // Create a product image
         const imgInstance = new this.fabric.Image(imgEl, {
-          id: "productImage",
+          id: id,
           item_name: item_name,
           left: imageLeft,
           top: imageTop,
@@ -948,7 +1081,7 @@ export default {
         });
 
         var group = new fabric.Group([rect, imgInstance], {
-          id: "productImage",
+          id: id,
           bgState: bgState,
           item_name: item_name,
           left: originLeft,
@@ -959,17 +1092,33 @@ export default {
           scaleY: originScaleY,
           layerShowPeriod: layerShowPeriod,
           angle: angle,
-          customType: "productImage",
+          customType: customType,
           objectCaching: false,
+          position:position,
+          originPoistion:originPoistion,
         });
-
+        group.setControlsVisibility({
+          tl: false, // Hide top left point
+          // tr: false, // Hide top right point
+          bl: false, // Hide bottom left point
+          mt: false, // Hide middle top point
+          ml: false, // Hide middle left point
+          mr: false, // Hide middle right point
+          mb: false, // Hide middle bottom point
+          mtr: false, // Hide rotation control button
+        });       
         var objects = this.canvas.c.getObjects();
-        var productIndex = objects.findIndex((el) => {
-          return el.customType == "productImage";
-        });
+        if(customType == "prodcutImage"){
+          var productIndex = objects.findIndex((el) => {
+            return el.customType == "productImage";
+          });
+        }else{
+          var productIndex = objects.findIndex((el) => {
+            return el.customType == "extra_product";
+          });          
+        }
+        
         productIndex = productIndex + 1;
-        console.log(productIndex);
-        console.log(objects.length);
         this.canvas.c.remove(this.canvas.c.getActiveObjects()[0]);
         this.canvas.c.add(group);
         this.canvas.c.setActiveObject(group);
@@ -980,8 +1129,8 @@ export default {
         }
 
         imgEl.remove();
-        this.controlProductImage();
         this.canvas.c.renderAll();
+        // this.controlProductImage();
         
       };
     },

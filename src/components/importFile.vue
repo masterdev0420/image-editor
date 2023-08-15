@@ -1,11 +1,11 @@
 <template>
   <div>
-     
+
     <DropdownItem @click="insertImg"><Icon type="ios-image" /><span style="margin-left:10px">Upload image</span></DropdownItem>
-    <!-- <DropdownItem @click="insert"><Icon type="ios-image" /><span style="margin-left:10px">json</span></DropdownItem> -->
     <DropdownItem @click="loadTemplate"><Icon type="ios-image" /><span style="margin-left:10px">templates</span></DropdownItem>
     <DropdownItem @click="loadElement"><Icon type="ios-image" /><span style="margin-left:10px">elements</span></DropdownItem>
-    
+    <DropdownItem @click="loadProductImage"><Icon type="ios-image" /><span style="margin-left:10px">Product image</span></DropdownItem>
+
     <Modal
       v-model="template"
       title="Choose the Template"
@@ -47,7 +47,7 @@
 
     <Modal
         v-model="element"
-        title="Choose the Template"
+        title="Choose the Element"
         :footer-hide="true"
         width="60%"
         >
@@ -85,6 +85,40 @@
 
     </Modal>        
 
+    <Modal
+        v-model="product"
+        title="Choose the Product"
+        :footer-hide="true"
+        width="60%"
+        >
+        <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-9" >
+            <div class="template-header row">
+              <div  class="col-md-8">
+                <Input suffix="ios-search" placeholder="Enter word for search" v-model="keyword_product"/>
+              </div>             
+            </div>
+            <Loader :active="loading" class="child"/>
+            <div
+              id="main"
+              class="template-content"
+              v-for="(item, index) in filterResultProductLists"
+              :key="index"
+              >
+  
+              <div class="image-box" imgId = {{item.id}} @click="()=>insertProduct(item)">
+                <img v-bind:src="item.image_url" style="width:150px;height:150px;" id="images0"/>
+                <div><span style="color:red;font-weight:bold">{{item.name}}</span></div>
+              </div>
+
+            </div>            
+          </div>
+        </div>
+
+
+    </Modal>  
   </div>
 </template>
 <script>
@@ -104,6 +138,7 @@ export default {
     return {
       element:false,
       template:false,
+      product:false,
       loading: false,
       border: true,
       hover: true,
@@ -111,12 +146,15 @@ export default {
       selected_element_type:'All elements',
       keyword_template:'',
       keyword_element:'',
+      keyword_product:'',
       group_types_template: '',  
       group_types_element: '',  
       demoTempLists:'',
       filterResultDemoLists:'',
       elementLists:'',
       filterResultElementLists:'',
+      productLists:'',
+      filterResultProductLists:'',
       loaderActive:true
     };
   },
@@ -133,7 +171,12 @@ export default {
 
   mounted(){
     if(this.path.slice(8) == "create"){
-      this.insertProductImage(productImage);
+      this.insertProductImage(productImage,{
+        id:"productImage",
+        name:"Product Image",
+        image_url:"",
+        customType:"productImage"
+      });
     }else{
       this.insertFileFromJSON(this.param_id);
     }
@@ -158,7 +201,6 @@ export default {
 
     filterElementLists(search_type,value){
       if(this.elementLists != ''){
-
         if(search_type == 'keyword'){
           let filteredElementLists = this.elementLists.filter((el) => {
             return el.name.toLowerCase().includes(value);
@@ -176,10 +218,19 @@ export default {
           });
           return orderedElementLists;          
         }
-
       }
     },
-
+    filterProductLists(value){
+      if(this.productLists != ''){
+        let filteredProductLists = this.productLists.filter((el) => {
+          return el.name.toLowerCase().includes(value);
+        })
+        let orderedProductLists = filteredProductLists.sort((a, b) => {
+          return b.upvoted - a.upvoted;
+        })
+        return orderedProductLists;          
+      }
+    },
     filterDemoTempLists(search_type,value){
       if(this.demoTempLists != ''){
         if(search_type == 'keyword'){
@@ -211,11 +262,6 @@ export default {
         workspace.set('selectable', false);
         workspace.set('hasControls', false);
         this.canvas.editor.editorWorkspace.setSize(workspace.width, workspace.height);
-        // this.canvas.c.getObjects().filter(arg=>{
-        //   arg
-        // });
-
-
         this.canvas.c.renderAll();
         this.canvas.c.requestRenderAll();
       });
@@ -306,7 +352,6 @@ export default {
               dataUrl.objects.push(item);
             }
           });
-
         }
 
         this.loadFonts(data.fontLists);         
@@ -329,6 +374,12 @@ export default {
       });      
     },
 
+    insertProduct(obj){
+      obj.customType = "extra_product";
+      this.insertProductImage(productImage,obj);
+      this.product = false;
+
+    },
     loadTemplate(){
       this.template = true; 
       this.loading = true;
@@ -410,7 +461,64 @@ export default {
       });         
       await (this.loading = false);
     },
+    async loadProductImage(){
+      this.product = true;
+      this.loading = true;
+      var templist = new Array();
+      var data = [
+      {
+        "name": "additional_image_link_first",
+        "id": "additional_image_link_first",
+        "customType":"extra_product"
+      },
+      {
+        "name": "additional_image_link_last",
+        "id": "additional_image_link_last",
+        "customType":"extra_product"
+      },
+      {
+        "name": "additional_image_link_1",
+        "id": "additional_image_link_1",
+        "customType":"extra_product"
+      },
+      {
+        "name": "additional_image_link_2",
+        "id": "additional_image_link_2",
+        "customType":"extra_product"
+      },
+      {
+        "name": "additional_image_link_3",
+        "id": "additional_image_link_3",
+        "customType":"extra_product"
+      },
+      {
+        "name": "brand_image_link",
+        "id": "brand_image_link",
+        "customType":"extra_product"
+      }   
+    ];
+      var tempTypes = [];
+      if(data){
+        data.forEach((e ,i)=> {
+          if(i==0){
+            tempTypes.push("All elements");
+          }
+          var id = data[i].id;
+          var name = data[i].name;
+          var image_url = productImage;
+          templist.push({
+            id:id,
+            name:name,
+            image_url:image_url
+          });           
 
+        });  
+
+        this.productLists = templist;
+        this.filterResultProductLists = templist;          
+      }
+      await (this.loading = false);      
+    },
     insert() {
       selectFiles({ accept: '.json' }).then((files) => {
         const [file] = files;
@@ -434,59 +542,16 @@ export default {
     },
 
     // insert empty file
-    insertProductImage(file,type) {
+    insertProductImage(file,obj) {
         setTimeout(() => {
         
           const imgEl = document.createElement('img');
           imgEl.src = file || this.imgFile;
           document.body.appendChild(imgEl);
-          // const self =  this.canvas.c;
-          // fabric.Image.fromURL("https://i.ibb.co/tsFmDV6/empty.png", function(imgInstance) {
-          //   imgInstance.set({
-          //     id: "productImage",
-          //     name: 'Product Image',
-          //     dirty:true                
-          //   });
-          //   var rect = new fabric.Rect({
-          //       height: 0,
-          //       width: 0,
-          //       fill: '',
-          //       strokeWidth:0,
-          //       opacity: 100,
-          //       id:"virtural",
-          //   });      
-
-          //   var group = new fabric.Group([rect, imgInstance]);
-          //   group.set({
-          //     id: "productImage",
-          //     item_name:'Product Image',
-          //     layerShowPeriod:{
-          //       mode:'',
-          //       startDate:'',
-          //       endDate:''
-          //     },
-          //     bgState:false,
-          //     customType:"productImage",
-          //     left:0-group.width,
-          //     objectCaching: false,
-          //   });
-            
-          //   self.add(group);
-          //   rect.set("width",group.width*group.scaleX);
-          //   rect.set("height",group.height*group.scaleY);
-          //   self.centerObject(group);
-          //   self.setActiveObject(group);
-
-          //   group.setOptions({ dirty: true });
-          //   self.renderAll();
-          //   }, {
-          //     crossOrigin: "Annoymous"
-          //   });   
-         
           imgEl.onload = () => {
             const imgInstance = new this.fabric.Image(imgEl, {
-              id: "productImage",
-              name: 'Product Image',
+              id: obj.id,
+              name: obj.name,
               dirty:true
             });
             var rect = new fabric.Rect({
@@ -497,22 +562,35 @@ export default {
                 opacity: 100,
                 id:"virtural",
             });      
-
             var group = new fabric.Group([rect, imgInstance]);
             group.set({
-              id: "productImage",
-              item_name:'Product Image',
+              id: obj.id,
+              item_name:obj.name,
               layerShowPeriod:{
                 mode:'',
                 startDate:'',
                 endDate:''
               },
               bgState:"productImage",
-              customType:"productImage",
+              customType:obj.customType,
               left:0-group.width,
               objectCaching: false,
+              position:{
+                positionX:"xCenter",
+                positionY:"yCenter"
+              },
+              originPoistion:"xCenter",  
             });
-            
+            group.setControlsVisibility({
+                tl: false, // Hide top left point
+                // tr: false, // Hide top right point
+                bl: false, // Hide bottom left point
+                mt: false, // Hide middle top point
+                ml: false, // Hide middle left point
+                mr: false, // Hide middle right point
+                mb: false, // Hide middle bottom point
+                mtr: false, // Hide rotation control button
+            });               
             this.canvas.c.add(group);
             rect.set("width",group.width*group.scaleX);
             rect.set("height",group.height*group.scaleY);
@@ -521,7 +599,6 @@ export default {
  
             group.setOptions({ dirty: true });
             this.canvas.c.renderAll();
-            // console.log(this.canvas.c.getActiveObject())
             // set zoom
             imgEl.remove();
           };          
@@ -571,7 +648,11 @@ export default {
     keyword_element(){
       var result = this.filterElementLists("keyword",this.keyword_element);
       this.filterResultElementLists = result;
-    }    
+    },    
+    keyword_product(){
+      var result = this.filterProductLists(this.keyword_product);
+      this.filterResultProductLists = result;
+    }        
   }
 
 };

@@ -25,7 +25,7 @@ export default {
           this.mSelectIds = e.map((item) => item.id);          
           return;          
         }
-        if(e[0].customType == "productImage"){
+        if(e[0].customType == "productImage" || e[0].customType == "extra_product" ){
           this.mSelectMode = 'one';
           this.mSelectId = e[0].id;
           this.mSelectOneType = "image";

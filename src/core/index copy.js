@@ -397,135 +397,132 @@ class Editor extends EventEmitter {
       this.checkLayerPeriod(canvasClone.getObjects());
       // add extra image 
       var product_extra_image = canvasClone.getObjects().filter((el,index)=>{
-        // if(el.extra)
-        if(el.customType == "extra_product"){
-          var keys = Object.keys(final_product_image);
-          keys.forEach(arg=>{
-            if(arg == el.item_name){
-              el.image_link = final_product_image[el.item_name]
-              return;
-            }
-          });
-          el.index = index;
-          return el;
-        }
+        var keys = Object.keys(final_product_image);
+        var flag = false;
+        keys.forEach(arg=>{
+          if(arg == el.item_name){
+            el.extra_product_link = final_product_image[el.item_name]
+            flag = true;
+            return;
+          }
+        })
 
+        if(flag == true){
+          el.index = index;
+          return el.index;
+        }
       });
       const productImage = canvasClone.getObjects().find((item,index) => {
-        if(item.customType === "productImage"){
+        if(item.id === "productImage" || item.id == "nonBgImage"){
           item.index = index;
-          item.image_link = final_product_image.image_link;
           return item;
         }
       });   
       const product_images = [productImage, ...product_extra_image];
+
+      // productImage.forEach(obj=>{
+        
+      // })
       // start change product image
 
-      product_images.forEach(async obj=>{
-        if(obj.image_link === undefined){
-          canvasClone.remove(obj);
-          canvasClone.renderAll();
-        }else{
-          if(obj.bgState === "nonBgImage"){
-            var config = {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"               
-              },      
-              responseType: 'arraybuffer'    
-            }
-    
-            await axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+obj.image_link,config).then(res=>{
-              var arrayBufferView = res.data
-              var blob = new Blob([arrayBufferView],{ type: "image/png" });
-              var urlCreator = window.URL || window.webkitURL;
-              var imageUrl = urlCreator.createObjectURL(blob);
-              obj.image_link = imageUrl;     
-            });
-          }
-          await fabric.Image.fromURL(obj.image_link, async (final_product_image) => {
-            final_product_image._element.crossOrigin = 'Anonymous';
-            if(obj.width >= obj.height){
-              
-              final_product_image.set({
-                scaleY:obj.height/final_product_image.height,
-                scaleX:obj.height/final_product_image.height,
-                layerShowPeriod:obj.layerShowPeriod,
-                id: obj.id,
-                angle: obj.angle,
-                item_name: "final_product_image"
-              }).setCoords();
-    
-            }else{
-    
-              final_product_image.set({
-                scaleY:obj.width/final_product_image.width,
-                scaleX:obj.width/final_product_image.width,
-                layerShowPeriod:obj.layerShowPeriod,
-                id: obj.id,
-                angle: obj.angle,
-                item_name: "final_product_image"
-              }).setCoords();
-            }
-    
-            if(final_product_image.width*final_product_image.scaleX > obj._objects[1].width && final_product_image.height*final_product_image.scaleY > obj._objects[1].height){
-              final_product_image.set({
-                scaleY:obj._objects[1]._element.naturalHeight/final_product_image.width,
-                scaleX:obj._objects[1]._element.naturalWidth/final_product_image.width,
-                layerShowPeriod:obj.layerShowPeriod,
-                id: obj.id,
-                angle: obj.angle,
-                item_name: "final_product_image",
-                left:obj.left,
-                top:obj.top
-              }).setCoords();     
-            }
-            final_product_image.setPositionByOrigin(new fabric.Point(obj.left + obj.width*obj.scaleX / 2, obj.top + obj.height*obj.scaleX / 2))
-            
-            //Check image position in the wrapper.
-            var final_product_image_left = final_product_image.left;
-            var final_product_image_top = final_product_image.top;        
-            if(obj.width > obj.height){
-    
-              if(obj.position.positionX == "right"){
-                final_product_image_left = final_product_image.left + (final_product_image.left - obj.left);
-              }
-              if(obj.position.positionX == "left"){
-                final_product_image_left = final_product_image.left - (final_product_image.left - obj.left);
-              }
-    
-            }
-    
-            if(obj.width < obj.height){
-              if(obj.position.positionY == "top"){
-                final_product_image_top = final_product_image.top - (final_product_image.top - obj.top);
-              }
-              if(obj.position.positionY == "bottom"){
-                final_product_image_top = final_product_image.top + (final_product_image.top - obj.top);
-              }
-            }
-            final_product_image.set({
-              left:final_product_image_left,
-              top:final_product_image_top
-            }).setCoords();
-            canvasClone.remove(obj); 
-            canvasClone.add(final_product_image);
-    
-          });  
-          setTimeout(() => {
-            var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
-            var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
-            var temp = cloneJson.objects[obj.index];
-            cloneJson.objects[obj.index] = finalProductImage;
-            cloneJson.objects[cloneJson.objects.length-1] = temp;    
-            finalJsonFile =  JSON.stringify(cloneJson);
-          }, 2000);        
-        }
-      })
+      if(productImage.bgState === true){
 
+        var config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"               
+          },      
+          responseType: 'arraybuffer'    
+        }
+
+        axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+final_product_image.image_link,config).then(res=>{
+          var arrayBufferView = res.data
+          var blob = new Blob([arrayBufferView],{ type: "image/png" });
+          var urlCreator = window.URL || window.webkitURL;
+          var imageUrl = urlCreator.createObjectURL(blob);
+          final_product_image.image_link = imageUrl;     
+        });
+      }
+
+      fabric.Image.fromURL(final_product_image.image_link, async (final_product_image) => {
+        final_product_image._element.crossOrigin = 'Anonymous';
+        if(productImage.width >= productImage.height){
           
+          final_product_image.set({
+            scaleY:productImage.height/final_product_image.height,
+            scaleX:productImage.height/final_product_image.height,
+            layerShowPeriod:productImage.layerShowPeriod,
+            id: productImage.id,
+            angle: productImage.angle,
+            item_name: "final_product_image"
+          }).setCoords();
+
+        }else{
+
+          final_product_image.set({
+            scaleY:productImage.width/final_product_image.width,
+            scaleX:productImage.width/final_product_image.width,
+            layerShowPeriod:productImage.layerShowPeriod,
+            id: productImage.id,
+            angle: productImage.angle,
+            item_name: "final_product_image"
+          }).setCoords();
+        }
+
+        if(final_product_image.width*final_product_image.scaleX > productImage._objects[1].width && final_product_image.height*final_product_image.scaleY > productImage._objects[1].height){
+          final_product_image.set({
+            scaleY:productImage._objects[1]._element.naturalHeight/final_product_image.width,
+            scaleX:productImage._objects[1]._element.naturalWidth/final_product_image.width,
+            layerShowPeriod:productImage.layerShowPeriod,
+            id: productImage.id,
+            angle: productImage.angle,
+            item_name: "final_product_image",
+            left:productImage.left,
+            top:productImage.top
+          }).setCoords();     
+        }
+        final_product_image.setPositionByOrigin(new fabric.Point(productImage.left + productImage.width*productImage.scaleX / 2, productImage.top + productImage.height*productImage.scaleX / 2))
+        
+        //Check image position in the wrapper.
+        var final_product_image_left = final_product_image.left;
+        var final_product_image_top = final_product_image.top;        
+        if(productImage.width > productImage.height){
+
+          if(productImage.position.positionX == "right"){
+            final_product_image_left = final_product_image.left + (final_product_image.left - productImage.left);
+          }
+          if(productImage.position.positionX == "left"){
+            final_product_image_left = final_product_image.left - (final_product_image.left - productImage.left);
+          }
+
+        }
+
+        if(productImage.width < productImage.height){
+          if(productImage.position.positionY == "top"){
+            final_product_image_top = final_product_image.top - (final_product_image.top - productImage.top);
+          }
+          if(productImage.position.positionY == "bottom"){
+            final_product_image_top = final_product_image.top + (final_product_image.top - productImage.top);
+          }
+        }
+        final_product_image.set({
+          left:final_product_image_left,
+          top:final_product_image_top
+        }).setCoords();
+        canvasClone.remove(productImage); 
+        canvasClone.add(final_product_image);
+
+      });  
+      setTimeout(() => {
+        var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
+        var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
+        var temp = cloneJson.objects[productImage.index];
+        cloneJson.objects[productImage.index] = finalProductImage;
+        cloneJson.objects[cloneJson.objects.length-1] = temp;    
+        finalJsonFile =  JSON.stringify(cloneJson);
+      }, 2000);          
       // start change product image
     });
 

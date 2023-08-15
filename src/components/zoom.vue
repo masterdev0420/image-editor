@@ -92,7 +92,6 @@ export default {
       this.canvas.editor.editorWorkspace.one();
     },
     big() {
-      console.log("aaaaaaaa")
       this.canvas.editor.editorWorkspace.big();
     },
     small() {

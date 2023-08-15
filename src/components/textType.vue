@@ -236,7 +236,7 @@
         <div class="mt-3" style="height:40px;">
           <div class="" style="float:left;">
             Alignment
-          </div>           
+          </div>
 
           <div class="" style="float:right;">
             <align :strokeWidth="Number(fontAttr.strokeWidth)"></align>
