@@ -436,7 +436,6 @@ class Editor extends EventEmitter {
               },      
               responseType: 'arraybuffer'    
             }
-    
             await axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+obj.image_link,config).then(res=>{
               var arrayBufferView = res.data
               var blob = new Blob([arrayBufferView],{ type: "image/png" });
@@ -521,11 +520,9 @@ class Editor extends EventEmitter {
             cloneJson.objects[obj.index] = finalProductImage;
             cloneJson.objects[cloneJson.objects.length-1] = temp;    
             finalJsonFile =  JSON.stringify(cloneJson);
-          }, 2000);        
+          }, 3000);        
         }
       })
-
-          
       // start change product image
     });
 

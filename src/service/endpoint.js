@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-// const server_url='https://img-v-b.onrender.com';
-// const server_url='https://image-editro-backend.onrender.com';
 
-// const server_url='http://localhost:3000';
-const server_url='https://img-v-b.onrender.com'
+const server_url='http://localhost:3000';
+// const server_url='https://img-v-b.onrender.com'
 //user template
 
 export const test=() =>{
@@ -42,6 +40,11 @@ export const updateTempName=(id,name) =>{
 // /product/get-preview-image/:id
 export const getPreviewImage = (keyword) =>{
     return axios.post(server_url+"/product/get-preview-image/",{keyword:keyword});
+}
+
+export const getAllDefaultImages = () =>{
+    console.log("ddd")
+    return axios.get(server_url+"/product/get-all-default-images");
 }
 
 //get element

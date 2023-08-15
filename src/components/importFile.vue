@@ -72,7 +72,6 @@
               v-for="(item, index) in filterResultElementLists"
               :key="index"
               >
-  
               <div class="image-box" imgId = {{item.id}} @click="()=>insertElement(item.id)">
                 <img v-bind:src="item.image_url" style="width:150px;height:150px;" id="images0"/>
                 <div><span style="color:red;font-weight:bold">{{item.name}}</span></div>
@@ -108,11 +107,14 @@
               :key="index"
               >
   
-              <div class="image-box" imgId = {{item.id}} @click="()=>insertProduct(item)">
+              <div v-if="item.active === true" class="image-box" imgId = {{item.id}} @click="()=>insertProduct(item)">
                 <img v-bind:src="item.image_url" style="width:150px;height:150px;" id="images0"/>
                 <div><span style="color:red;font-weight:bold">{{item.name}}</span></div>
               </div>
-
+              <div v-if="item.active === false" class="image-box" imgId = {{item.id}} @click="()=>insertProduct(item)" style="background-color: #c7c7c7;">
+                <img v-bind:src="item.image_url" style="width:150px;height:150px;" id="images0"/>
+                <div><span style="color:red;font-weight:bold">{{item.name}}</span></div>
+              </div>
             </div>            
           </div>
         </div>
@@ -127,7 +129,7 @@ import { getImgStr, selectFiles} from '@/utils/utils';
 import select from '@/mixins/select';
 import { v4 as uuid } from 'uuid';
 import {productImage} from '@/utils/imgConstant';
-import {getAllTemps,getTempById,getUserTempById,getAllElements,getElementById} from "@/service/endpoint";
+import {getAllTemps,getTempById,getUserTempById,getAllElements,getElementById,getAllDefaultImages} from "@/service/endpoint";
 import Loader from "./loader1.vue";
 import OpenType from 'opentype.js';
 export default {
@@ -464,60 +466,45 @@ export default {
     async loadProductImage(){
       this.product = true;
       this.loading = true;
-      var templist = new Array();
-      var data = [
-      {
-        "name": "additional_image_link_first",
-        "id": "additional_image_link_first",
-        "customType":"extra_product"
-      },
-      {
-        "name": "additional_image_link_last",
-        "id": "additional_image_link_last",
-        "customType":"extra_product"
-      },
-      {
-        "name": "additional_image_link_1",
-        "id": "additional_image_link_1",
-        "customType":"extra_product"
-      },
-      {
-        "name": "additional_image_link_2",
-        "id": "additional_image_link_2",
-        "customType":"extra_product"
-      },
-      {
-        "name": "additional_image_link_3",
-        "id": "additional_image_link_3",
-        "customType":"extra_product"
-      },
-      {
-        "name": "brand_image_link",
-        "id": "brand_image_link",
-        "customType":"extra_product"
-      }   
-    ];
-      var tempTypes = [];
-      if(data){
-        data.forEach((e ,i)=> {
-          if(i==0){
-            tempTypes.push("All elements");
-          }
-          var id = data[i].id;
-          var name = data[i].name;
-          var image_url = productImage;
-          templist.push({
-            id:id,
-            name:name,
-            image_url:image_url
-          });           
+      await getAllDefaultImages().then((resp)=>{
+        var templist = new Array();
+        var data = resp.data;
+        console.log(data)
+        if(data){
+          data.forEach((e ,i)=> {
+            var id = data[i].id;
+            var name = data[i].name;
+            var image_url = productImage;
+            var active = true;
 
-        });  
+            var extra_product = this.canvas.c.getObjects().filter(arg=>{
+              return arg.customType == "extra_product";
+            });
 
-        this.productLists = templist;
-        this.filterResultProductLists = templist;          
-      }
+            if(extra_product){
+              extra_product.forEach(arg=>{
+                if(arg.id == data[i].id){
+                  active = false;
+                  return;
+                } 
+              });
+            }
+            templist.push({
+              id:id,
+              name:name,
+              image_url:image_url,
+              active:active
+            });           
+          });  
+
+          this.productLists = templist;
+          this.filterResultProductLists = templist;          
+        }
+      }).catch(error => {
+        console.log(error);
+      });         
       await (this.loading = false);      
+
     },
     insert() {
       selectFiles({ accept: '.json' }).then((files) => {
@@ -549,11 +536,44 @@ export default {
           imgEl.src = file || this.imgFile;
           document.body.appendChild(imgEl);
           imgEl.onload = () => {
-            const imgInstance = new this.fabric.Image(imgEl, {
-              id: obj.id,
-              name: obj.name,
-              dirty:true
-            });
+            if(obj.customType == "extra_product"){
+
+              var tempImage = new this.fabric.Image(imgEl, {
+                id: obj.id,
+                name: obj.name,
+              });
+
+              var default_image_name = new this.fabric.IText(obj.name, {
+                fontFamily: 'Courier New',
+                fontSize: 20,
+                fontWeight:"bold",
+                fontColor:"white"
+              });
+
+              // Set the text's position to the center of the image
+              default_image_name.left = tempImage.left + tempImage.width / 2 - default_image_name.width / 2;
+              default_image_name.top = tempImage.height - 30;
+
+              var imgInstance = new fabric.Group([tempImage, default_image_name]);
+
+              imgInstance.set({
+                id: obj.id,
+                name: obj.name,
+                customType:"extra_product",
+                dirty: true
+              });
+
+              // Call setCoords to update the coordinates of the text
+              imgInstance.setCoords();
+
+            }else{
+              var imgInstance = new this.fabric.Image(imgEl, {
+                id: obj.id,
+                name: obj.name,
+                dirty:true
+              });
+            }
+
             var rect = new fabric.Rect({
                 height: 0,
                 width: 0,

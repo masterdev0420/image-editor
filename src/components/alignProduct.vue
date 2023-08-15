@@ -142,7 +142,7 @@
         const activeObject = this.canvas.c.getActiveObject();
         if (activeObject && activeObject._objects[1].width!=activeObject.width) {
           activeObject.forEachObject((item) => {
-              if(item.type == "image"){
+              if(item.type == "image" || item.customType == "extra_product"){
               item.set({
                   left: -(activeObject.width/2)
               });            
@@ -160,12 +160,12 @@
           const activeSelection = activeObject;
           const activeObjectLeft = activeObject.width / 2;
           activeSelection.forEachObject((item) => {
-            if(item.type == "image"){
-                item.set({
-                    left: (activeObjectLeft - (item.width)*item.scaleX),
-                });    
-                item.setCoords();
-                this.canvas.c.renderAll();
+            if(item.type == "image" || item.customType == "extra_product"){
+              item.set({
+                  left: (activeObjectLeft - (item.width)*item.scaleX),
+              });    
+              item.setCoords();
+              this.canvas.c.renderAll();
             }          
           });
           activeObject.set('position',{positionX:"right",positionY:activeObject?activeObject.position.positionY:-(activeObject.height / 2 * activeObject.scaleY)});
@@ -178,13 +178,13 @@
         if (activeObject && activeObject._objects[1].width!=activeObject.width) {
           const activeSelection = activeObject;
           activeSelection.forEachObject((item) => {
-              if(item.type == "image"){
-                item.set({
-                    left: 0 - (item.width * item.scaleX) / 2,
-                });
-                item.setCoords();
-                this.canvas.c.renderAll();
-              }          
+            if(item.type == "image" || item.customType == "extra_product"){
+              item.set({
+                  left: 0 - (item.width * item.scaleX) / 2,
+              });
+              item.setCoords();
+              this.canvas.c.renderAll();
+            }          
           });
         }
         activeObject.set('position',{positionX:"xCenter",positionY:activeObject?activeObject.position.positionY:-(activeObject.height / 2)});
@@ -196,7 +196,7 @@
         if (activeObject) {
           const activeSelection = activeObject;
           activeSelection.forEachObject((item) => {
-            if(item.type == "image"){
+            if(item.type == "image" || item.customType == "extra_product"){
               item.set({
                   top: 0 - (item.height * item.scaleY) / 2,
               });
@@ -214,7 +214,7 @@
         const activeSelection = activeObject;
         const activeObjectTop = -(activeObject.height / 2);
           activeSelection.forEachObject((item) => {
-            if(item.type == "image"){
+            if(item.type == "image" || item.customType == "extra_product"){
               item.set({
                   top: activeObjectTop,
               });
@@ -231,17 +231,17 @@
       bottom() {
         const activeObject = this.canvas.c.getActiveObject();
         if (activeObject) {
-            const activeSelection = activeObject;
-            const activeObjectTop = activeObject.height / 2;
-            activeSelection.forEachObject((item) => {
-                if(item.type == "image"){
-                  item.set({
-                    top: activeObjectTop - item.height*item.scaleY,
-                  });
-                  item.setCoords();
-                  this.canvas.c.renderAll();
-                }
-            });
+          const activeSelection = activeObject;
+          const activeObjectTop = activeObject.height / 2;
+          activeSelection.forEachObject((item) => {
+            if(item.type == "image" || item.customType == "extra_product"){
+              item.set({
+                top: activeObjectTop - item.height*item.scaleY,
+              });
+              item.setCoords();
+              this.canvas.c.renderAll();
+            }
+          });
         }      
         activeObject.set('position',{positionY:"bottom",positionX:activeObject?activeObject.position.positionX:-(activeObject.width) / 2});
       }
