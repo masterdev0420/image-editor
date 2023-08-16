@@ -583,6 +583,7 @@ export default {
                 id:"virtural",
             });      
             var group = new fabric.Group([rect, imgInstance]);
+            console.log(obj.name)
             group.set({
               id: obj.id,
               item_name:obj.name,

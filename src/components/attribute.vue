@@ -1069,7 +1069,6 @@ export default {
           var textScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleX;
           var textScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleY;        
 
-          var item_name = this.canvas.c.getActiveObject().item_name;
           var tempImage = new this.fabric.Image(imgEl, {
             id: id,
             item_name: item_name,
