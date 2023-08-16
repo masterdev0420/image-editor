@@ -250,7 +250,7 @@
                   Alignment
                 </div>           
                 <div class="" style="float:right;">
-                  <align-product></align-product>
+                  <align-product :position="[this.baseAttr.position]"></align-product>
                 </div>
               </div>              
             </div>
@@ -511,6 +511,7 @@ export default {
       if (activeObject) {
         // base
         this.baseAttr.id = activeObject.id;
+        this.baseAttr.position = activeObject.position;
         this.baseAttr.customType = activeObject.customType;
         this.baseAttr.item_name = activeObject.item_name;
         this.baseAttr.round = activeObject.get("rx");
