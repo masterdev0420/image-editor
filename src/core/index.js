@@ -485,8 +485,8 @@ class Editor extends EventEmitter {
             
             //Check image position in the wrapper.
             var final_product_image_left = final_product_image.left;
-            var final_product_image_top = final_product_image.top;        
-            if(obj.width > obj.height){
+            var final_product_image_top = final_product_image.top;
+            console.log(obj)        
     
               if(obj.position.positionX == "right"){
                 final_product_image_left = final_product_image.left + (final_product_image.left - obj.left);
@@ -495,16 +495,12 @@ class Editor extends EventEmitter {
                 final_product_image_left = final_product_image.left - (final_product_image.left - obj.left);
               }
     
-            }
-    
-            if(obj.width < obj.height){
               if(obj.position.positionY == "top"){
                 final_product_image_top = final_product_image.top - (final_product_image.top - obj.top);
               }
               if(obj.position.positionY == "bottom"){
                 final_product_image_top = final_product_image.top + (final_product_image.top - obj.top);
               }
-            }
             final_product_image.set({
               left:final_product_image_left,
               top:final_product_image_top
@@ -520,7 +516,7 @@ class Editor extends EventEmitter {
             cloneJson.objects[obj.index] = finalProductImage;
             cloneJson.objects[cloneJson.objects.length-1] = temp;    
             finalJsonFile =  JSON.stringify(cloneJson);
-          }, 3000);        
+          }, 2000);        
         }
       })
       // start change product image
@@ -529,7 +525,7 @@ class Editor extends EventEmitter {
     const intervalId = setInterval(myFunction, 1000);
     function myFunction(){
       if((finalJsonFile != undefined)){
-        canvasClone.loadFromJSON(finalJsonFile, async () => {
+      canvasClone.loadFromJSON(finalJsonFile, async () => {
           canvasClone.renderAll.bind(canvasClone);
           const workspace = canvasClone.getObjects().find((item) => item.id === 'workspace');
           const { left, top, width, height } = workspace;                  

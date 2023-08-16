@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 
-// const server_url='http://localhost:3000';
-const server_url='https://img-v-b.onrender.com'
+const server_url='http://localhost:3000';
+// const server_url='https://img-v-b.onrender.com';
 //user template
 
 export const test=() =>{
