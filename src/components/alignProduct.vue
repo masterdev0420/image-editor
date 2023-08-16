@@ -143,6 +143,13 @@
       console.log(this.positionX);
       // console.log(this.positionStatus[0].positionX);
     },
+    created(){
+      this.event.on("selectOne", (items)=>{
+        var activeObject = this.canvas.c.getActiveObjects()[0];
+        this.positionX = activeObject.position.positionX;
+        this.positionY = activeObject.position.positionY;
+      })
+    },
     methods: {
       // When it is not multi-selected, the combined alignment operation is prohibited
       notMultiple() {
