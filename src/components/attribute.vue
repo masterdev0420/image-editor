@@ -494,12 +494,12 @@ export default {
           target.setCoords(); // Update the object's coordinates
         }       
       }
-     
-  
+
       if (activeObject.customType == "productImage" || activeObject.customType == "extra_product" ) {
         this.controlProductImage();
         this.fixTextPosition();
       }
+
     }),
     this.event.on("selectUpdate", () => {
       if (this.canvas.c.getActiveObject().name == "picture") {

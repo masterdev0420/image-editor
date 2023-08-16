@@ -155,7 +155,8 @@
       },
       left() {
         const activeObject = this.canvas.c.getActiveObject();
-        if (activeObject && activeObject._objects[1].width!=activeObject.width) {
+        if (activeObject) {
+          console.log("aaaaaaaaa")
           activeObject.forEachObject((item) => {
               if(item.type == "image" || item.customType == "extra_product"){
               item.set({
@@ -173,7 +174,7 @@
       // right align
       right() {
         const activeObject = this.canvas.c.getActiveObject();
-        if (activeObject && activeObject._objects[1].width * activeObject.scaleX!=activeObject.width*activeObject.scaleX) {
+        if (activeObject) {
           const activeSelection = activeObject;
           const activeObjectLeft = activeObject.width / 2;
           activeSelection.forEachObject((item) => {
