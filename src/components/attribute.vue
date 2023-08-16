@@ -479,18 +479,22 @@ export default {
   created() {
     this.canvas.c.on("object:scaling", (opt) => {
       var activeObject = this.canvas.c.getActiveObject();
-      var target = opt.target;
-      var pointer = this.canvas.c.getPointer(opt.e);      
-      if (target && target.id === "productImage" && pointer.x !== target.left && pointer.y !== target.top || target.customType === "extra_product") {
-        var scaleXChange = (pointer.x - target.left) / target.width;
-        var scaleYChange = (pointer.y - target.top) / target.height;
-        target.lockScalingFlip = true;
-        target.set({
-          scaleX: scaleXChange,
-          scaleY: scaleYChange,
-        });
-        target.setCoords(); // Update the object's coordinates
-      }            
+    
+      if(opt.transform.corner == "br"){
+        var target = opt.target;
+        var pointer = this.canvas.c.getPointer(opt.e);          
+        if (target && target.id === "productImage" && pointer.x !== target.left && pointer.y !== target.top || target.customType === "extra_product") {
+          var scaleXChange = (pointer.x - target.left) / target.width;
+          var scaleYChange = (pointer.y - target.top) / target.height;
+          target.lockScalingFlip = true;
+          target.set({
+            scaleX: scaleXChange,
+            scaleY: scaleYChange,
+          });
+          target.setCoords(); // Update the object's coordinates
+        }       
+      }
+     
   
       if (activeObject.customType == "productImage" || activeObject.customType == "extra_product" ) {
         this.controlProductImage();

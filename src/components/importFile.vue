@@ -606,10 +606,10 @@ export default {
                 tl: false, // Hide top left point
                 // tr: false, // Hide top right point
                 bl: false, // Hide bottom left point
-                mt: false, // Hide middle top point
-                ml: false, // Hide middle left point
-                mr: false, // Hide middle right point
-                mb: false, // Hide middle bottom point
+                // mt: false, // Hide middle top point
+                // ml: false, // Hide middle left point
+                // mr: false, // Hide middle right point
+                // mb: false, // Hide middle bottom point
                 mtr: false, // Hide rotation control button
             });               
             this.canvas.c.add(group);
