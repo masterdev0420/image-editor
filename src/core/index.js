@@ -468,11 +468,11 @@ class Editor extends EventEmitter {
                 item_name: "final_product_image"
               }).setCoords();
             }
-    
+            console.log(obj._objects[1].height)
             if(final_product_image.width*final_product_image.scaleX > obj._objects[1].width && final_product_image.height*final_product_image.scaleY > obj._objects[1].height){
               final_product_image.set({
-                scaleY:obj._objects[1]._element.naturalHeight/final_product_image.width,
-                scaleX:obj._objects[1]._element.naturalWidth/final_product_image.width,
+                scaleY:obj._objects[1].height/final_product_image.width,
+                scaleX:obj._objects[1].width/final_product_image.width,
                 layerShowPeriod:obj.layerShowPeriod,
                 id: obj.id,
                 angle: obj.angle,
@@ -543,7 +543,9 @@ class Editor extends EventEmitter {
           const imgUrl = canvasClone.toDataURL(option);
           canvasClone.setViewportTransform(oldViewport);  
           canvasClone.requestRenderAll();
-          document.getElementById("preview"+(index)).src = imgUrl;
+          if(imgUrl != null){
+            document.getElementById("preview"+(index)).src = imgUrl;
+          }
         });          
         clearInterval(intervalId);
       }
