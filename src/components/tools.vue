@@ -174,7 +174,11 @@ export default {
           mode:'',
           startDate:'',
           endDate:''
-        }        
+        },
+        position:{
+          positionX:"left",
+          positionY:"top"
+        },                
       });
       this.canvas.c.add(circle);
       this.canvas.c.centerObject(circle);
@@ -195,7 +199,11 @@ export default {
           mode:'',
           startDate:'',
           endDate:''
-        }        
+        },
+        position:{
+          positionX:"left",
+          positionY:"top"
+        },                
       });
       this.canvas.c.add(rect);
       this.canvas.c.centerObject(rect);

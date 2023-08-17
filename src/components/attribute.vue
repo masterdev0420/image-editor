@@ -1155,7 +1155,6 @@ export default {
           });          
         }
         productIndex = productIndex + 1;
-        console.log(objects.length, productIndex)
         this.canvas.c.remove(this.canvas.c.getActiveObjects()[0]);
         this.canvas.c.add(group);
         this.canvas.c.setActiveObject(group);

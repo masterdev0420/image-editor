@@ -357,7 +357,6 @@ class Editor extends EventEmitter {
       const w = Math.round(target.width);
       const h = Math.round(target.height);
       const canvas = document.createElement("canvas");
-      
       canvas.width = w;
       canvas.height = h;
       const canvasContext = canvas.getContext("2d");
@@ -384,8 +383,10 @@ class Editor extends EventEmitter {
     var jsonFile = JSON.stringify(this.changeTags(this.getJson(),tags,final_product_image));
     var canvas = document.createElement("CANVAS");
     var finalJsonFile;
+    
     canvas.id = "tempCanvas";
     canvas.style.display = "none";
+
     var canvasClone = new fabric.Canvas("tempCanvas",{
       fireRightClick: true,
       stopContextMenu: true,
@@ -397,7 +398,6 @@ class Editor extends EventEmitter {
       this.checkLayerPeriod(canvasClone.getObjects());
       // add extra image 
       var product_extra_image = canvasClone.getObjects().filter((el,index)=>{
-        // if(el.extra)
         if(el.customType == "extra_product"){
           var keys = Object.keys(final_product_image);
           keys.forEach(arg=>{
@@ -409,8 +409,8 @@ class Editor extends EventEmitter {
           el.index = index;
           return el;
         }
-
       });
+
       const productImage = canvasClone.getObjects().find((item,index) => {
         if(item.customType === "productImage"){
           item.index = index;
@@ -420,16 +420,14 @@ class Editor extends EventEmitter {
       });   
       const product_images = [productImage, ...product_extra_image];
       // start change product image
-
       product_images.forEach(async obj=>{
         if(obj.image_link === undefined){
-
           canvasClone.remove(obj);
           canvasClone.renderAll();
         }else{
+          var index = obj.index;
           var removeBg;
           if(obj.bgState === "nonBgImage"){
-
             removeBg = new Promise((resolve)=>{
               var config = {
                 headers: {
@@ -440,13 +438,12 @@ class Editor extends EventEmitter {
                 },      
                 responseType: 'arraybuffer'   
               }
-
               axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+obj.image_link,config).then(async res=>{
                 var arrayBufferView = res.data
                 var blob = new Blob([arrayBufferView],{ type: "image/png" });
                 var urlCreator = window.URL || window.webkitURL;
                 var imageUrl = urlCreator.createObjectURL(blob);
-                obj.image_link = imageUrl;    
+                obj.image_link = imageUrl;
                 resolve();
               });         
             });
@@ -457,6 +454,7 @@ class Editor extends EventEmitter {
             });
           }
           removeBg.then(()=>{
+            var product_index = obj.index;
             fabric.Image.fromURL(obj.image_link, async (final_product_image) => {
               final_product_image._element.crossOrigin = 'Anonymous';
               if(obj.width >= obj.height){
@@ -520,18 +518,16 @@ class Editor extends EventEmitter {
               }).setCoords();
               canvasClone.remove(obj); 
               canvasClone.add(final_product_image);
+              for (var i = 0; i < canvasClone.getObjects().length - product_index-1; i++) {
+                final_product_image.sendBackwards();
+              }              
               const finalJsonCreate = setInterval(finalJsonFunc, 500);
               function finalJsonFunc(){
                 var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
-                var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
-                var temp = cloneJson.objects[obj.index];
-                cloneJson.objects[obj.index] = finalProductImage;
-                cloneJson.objects[cloneJson.objects.length-1] = temp;    
-                finalJsonFile =  JSON.stringify(cloneJson);
+                finalJsonFile = JSON.stringify(cloneJson);
                 if(finalJsonFile != undefined){
                   clearInterval(finalJsonCreate);
                 }
-
               }
             });              
           });
@@ -540,7 +536,6 @@ class Editor extends EventEmitter {
       // start change product image
     });
     const finalImageCreate = setInterval(finalImageFunc, 1000);
-
 
     function finalImageFunc(){
       if(finalJsonFile != undefined){

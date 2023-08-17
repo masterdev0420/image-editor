@@ -175,8 +175,8 @@ export default {
     if(this.path.slice(8) == "create"){
       this.insertProductImage(productImage,{
         id:"productImage",
-        name:"Defalut Image",
-        item_name:"Defalut Image",
+        name:"Default Image",
+        item_name:"Default Image",
         image_url:"",
         customType:"productImage"
       });
