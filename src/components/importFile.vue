@@ -176,6 +176,7 @@ export default {
       this.insertProductImage(productImage,{
         id:"productImage",
         name:"Defalut Image",
+        item_name:"Defalut Image",
         image_url:"",
         customType:"productImage"
       });
@@ -469,7 +470,6 @@ export default {
       await getAllDefaultImages().then((resp)=>{
         var templist = new Array();
         var data = resp.data;
-        console.log(data)
         if(data){
           data.forEach((e ,i)=> {
             var id = data[i].id;
@@ -530,7 +530,7 @@ export default {
 
     // insert empty file
     insertProductImage(file,obj) {
-        setTimeout(() => {
+      setTimeout(() => {
         
           const imgEl = document.createElement('img');
           imgEl.src = file || this.imgFile;
@@ -574,7 +574,6 @@ export default {
                 id:"virtural",
             });      
             var group = new fabric.Group([rect, imgInstance]);
-            console.log(obj.name)
             group.set({
               id: obj.id,
               item_name:obj.name,
@@ -594,21 +593,15 @@ export default {
               originPoistion:"xCenter",  
             });
             group.setControlsVisibility({
-                tl: false, // Hide top left point
-                // tr: false, // Hide top right point
-                bl: false, // Hide bottom left point
-                // mt: false, // Hide middle top point
-                // ml: false, // Hide middle left point
-                // mr: false, // Hide middle right point
-                // mb: false, // Hide middle bottom point
-                mtr: false, // Hide rotation control button
-            });               
+              tl: false, // Hide top left point
+              bl: false, // Hide bottom left point
+              mtr: false, // Hide rotation control button
+            });
             this.canvas.c.add(group);
             rect.set("width",group.width*group.scaleX);
             rect.set("height",group.height*group.scaleY);
             this.canvas.c.centerObject(group);
             this.canvas.c.setActiveObject(group);
- 
             group.setOptions({ dirty: true });
             this.canvas.c.renderAll();
             // set zoom
@@ -629,7 +622,7 @@ export default {
         var name = this.canvas.editor.getName("image");
         var product = this.canvas.c.getObjects().filter(arg=>{
           return arg.id == "productImage"
-        })
+        });
         const imgInstance = new this.fabric.Image(imgEl, {
           id: uuid(),
           item_name:name,

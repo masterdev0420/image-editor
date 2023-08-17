@@ -516,15 +516,19 @@ export default {
         this.baseAttr.width = activeObject.get("width");
         this.baseAttr.opacity = activeObject.get("opacity") * 100;
         this.baseAttr.fill = activeObject.get("fill");
+
         if (this.baseAttr.fill == null) {
           this.baseAttr.fill = "";
         }
+
         this.baseAttr.left = activeObject.get("left");
         this.baseAttr.top = activeObject.get("top");
         this.baseAttr.stroke = activeObject.get("stroke");
+
         if (this.baseAttr.stroke == null) {
           this.baseAttr.stroke = "";
         }
+
         this.baseAttr.shadow = activeObject.get("shadow") || {};
         this.baseAttr.angle = activeObject.get("angle") || 0;
         this.baseAttr.padding = activeObject.get("padding") || 0;
@@ -536,8 +540,7 @@ export default {
           //<!----------------- group property --------------->
           this.fontAttr.position = groupObj.position;
           this.fontAttr.fontLists = window.globalFonts;
-          this.fontAttr.selected_text_manage_type =
-            groupObj.texthandle || "automatic";
+          this.fontAttr.selected_text_manage_type = groupObj.texthandle || "automatic";
           //<!----------------- end group property --------------->
 
           //<!----------------- rect property --------------->
@@ -888,11 +891,13 @@ export default {
       var imgH = this.canvas.c
         .getActiveObject()
         ._objects[1].getElement().height;
+      
       const activeObject = this.canvas.c.getActiveObjects()[0];
       var scale = activeObject._objects[1].scaleX;
       activeObject.set("width", width);
       activeObject._objects[1].set("scaleX", scale);
       activeObject._objects[1].set("scaleY", scale);
+
       if (scale <= width / imgW) {
         scale = width / imgW;
         activeObject._objects[1].set("scaleX", scale);
@@ -902,6 +907,7 @@ export default {
         activeObject._objects[1].set("left", left);
         activeObject._objects[1].set("top", top);
       }
+
       var clipRect = new fabric.Rect({
         originX: "left",
         originY: "top",
@@ -913,10 +919,10 @@ export default {
         absolutePositioned: true,
       });
       activeObject.clipPath = clipRect;
-
       this.canvas.c.renderAll();
       activeObject.clipPath = "";
       return;
+
     },
 
     imgHeightClip(height) {
@@ -1059,62 +1065,47 @@ export default {
       document.body.appendChild(imgEl);
       imgEl.onload = () => {
         // Create a product image
-        if(customType == "extra_product"){
-          var tempImageLeft = this.canvas.c.getActiveObject()._objects[1]._objects[0].left;
-          var tempImageTop = this.canvas.c.getActiveObject()._objects[1]._objects[0].top;
-          var tempImageScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleX;
-          var tempImageScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleY;
+        var tempImageLeft = this.canvas.c.getActiveObject()._objects[1]._objects[0].left;
+        var tempImageTop = this.canvas.c.getActiveObject()._objects[1]._objects[0].top;
+        var tempImageScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleX;
+        var tempImageScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[0].scaleY;
 
-          var textLeft = this.canvas.c.getActiveObject()._objects[1]._objects[1].left;
-          var textTop = this.canvas.c.getActiveObject()._objects[1]._objects[1].top;
-          var textScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleX;
-          var textScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleY;        
+        var textLeft = this.canvas.c.getActiveObject()._objects[1]._objects[1].left;
+        var textTop = this.canvas.c.getActiveObject()._objects[1]._objects[1].top;
+        var textScaleX = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleX;
+        var textScaleY = this.canvas.c.getActiveObject()._objects[1]._objects[1].scaleY;        
 
-          var tempImage = new this.fabric.Image(imgEl, {
-            id: id,
-            item_name: item_name,
-            left: tempImageLeft,
-            top: tempImageTop,
-            scaleX: tempImageScaleX,
-            scaleY: tempImageScaleY
-          });
+        var tempImage = new this.fabric.Image(imgEl, {
+          id: id,
+          item_name: item_name,
+          left: tempImageLeft,
+          top: tempImageTop,
+          scaleX: tempImageScaleX,
+          scaleY: tempImageScaleY
+        });
 
-          var text = new this.fabric.IText(item_name, {
-            fontFamily: 'Courier New',
-            fontSize: 20,
-            fontWeight:"bold",
-            fill:"white",
-            left:textLeft,
-            top:textTop,
-            scaleX:textScaleX,
-            scralY:textScaleY,                
-          });          
+        var text = new this.fabric.IText(item_name, {
+          fontFamily: 'Courier New',
+          fontSize: 20,
+          fontWeight:"bold",
+          fill:"white",
+          left:textLeft,
+          top:textTop,
+          scaleX:textScaleX,
+          scralY:textScaleY,                
+        });          
 
-          var imgInstance = new this.fabric.Group([tempImage, text]);
-          imgInstance.set({
-            id: id,
-            customType:customType,
-            item_name: item_name,
-            left: imageLeft,
-            top: imageTop,
-            scaleX: imageScaleX,
-            scaleY: imageScaleY,
-            opacity: opacity,
-          });          
-        }
-
-        if(customType == "productImage"){
-    
-          var imgInstance = new this.fabric.Image(imgEl, {
-            id: id,
-            item_name: item_name,
-            left: imageLeft,
-            top: imageTop,
-            scaleX: imageScaleX,
-            scaleY: imageScaleY,
-            opacity: opacity,
-          });
-        }
+        var imgInstance = new this.fabric.Group([tempImage, text]);
+        imgInstance.set({
+          id: id,
+          customType:customType,
+          item_name: item_name,
+          left: imageLeft,
+          top: imageTop,
+          scaleX: imageScaleX,
+          scaleY: imageScaleY,
+          opacity: opacity,
+        });          
 
         var rect = new fabric.Rect({
           left: rectLeft,
@@ -1160,11 +1151,11 @@ export default {
           });
         }else{
           var productIndex = objects.findIndex((el) => {
-            return el.customType == "extra_product";
+            return el.item_name == this.canvas.c.getActiveObject().item_name;
           });          
         }
-        
         productIndex = productIndex + 1;
+        console.log(objects.length, productIndex)
         this.canvas.c.remove(this.canvas.c.getActiveObjects()[0]);
         this.canvas.c.add(group);
         this.canvas.c.setActiveObject(group);
@@ -1176,7 +1167,7 @@ export default {
 
         imgEl.remove();
         this.canvas.c.renderAll();
-        // this.controlProductImage();
+        this.controlProductImage();
         
       };
     },

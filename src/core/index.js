@@ -423,109 +423,120 @@ class Editor extends EventEmitter {
 
       product_images.forEach(async obj=>{
         if(obj.image_link === undefined){
+
           canvasClone.remove(obj);
           canvasClone.renderAll();
         }else{
+          var removeBg;
           if(obj.bgState === "nonBgImage"){
-            var config = {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"               
-              },      
-              responseType: 'arraybuffer'    
-            }
-            await axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+obj.image_link,config).then(res=>{
-              var arrayBufferView = res.data
-              var blob = new Blob([arrayBufferView],{ type: "image/png" });
-              var urlCreator = window.URL || window.webkitURL;
-              var imageUrl = urlCreator.createObjectURL(blob);
-              obj.image_link = imageUrl;     
-            });
-          }
-          await fabric.Image.fromURL(obj.image_link, async (final_product_image) => {
-            final_product_image._element.crossOrigin = 'Anonymous';
-            if(obj.width >= obj.height){
-              
-              final_product_image.set({
-                scaleY:obj.height/final_product_image.height,
-                scaleX:obj.height/final_product_image.height,
-                layerShowPeriod:obj.layerShowPeriod,
-                id: obj.id,
-                angle: obj.angle,
-                item_name: "final_product_image"
-              }).setCoords();
-    
-            }else{
-              console.log(obj.flipX)
-    
-              final_product_image.set({
-                scaleY:obj.width/final_product_image.width,
-                scaleX:obj.width/final_product_image.width,
-                layerShowPeriod:obj.layerShowPeriod,
-                id: obj.id,
-                angle: obj.angle,
-                item_name: "final_product_image",
-                flipX:obj.flipX,
-                flipY:obj.flipY 
-              }).setCoords();
-            }
-            if(final_product_image.width*final_product_image.scaleX > obj._objects[1].width && final_product_image.height*final_product_image.scaleY > obj._objects[1].height){
-              final_product_image.set({
-                scaleY:obj._objects[1].height/final_product_image.width,
-                scaleX:obj._objects[1].width/final_product_image.width,
-                layerShowPeriod:obj.layerShowPeriod,
-                id: obj.id,
-                angle: obj.angle,
-                item_name: "final_product_image",
-                left:obj.left,
-                top:obj.top,
-                flipX:obj.flipX,
-                flipY:obj.flipY                
-              }).setCoords();     
-            }
-            final_product_image.setPositionByOrigin(new fabric.Point(obj.left + obj.width*obj.scaleX / 2, obj.top + obj.height*obj.scaleX / 2))
-            
-            //Check image position in the wrapper.
-            var final_product_image_left = final_product_image.left;
-            var final_product_image_top = final_product_image.top;
-    
-              if(obj.position.positionX == "right"){
-                final_product_image_left = final_product_image.left + (final_product_image.left - obj.left);
-              }
-              if(obj.position.positionX == "left"){
-                final_product_image_left = final_product_image.left - (final_product_image.left - obj.left);
-              }
-    
-              if(obj.position.positionY == "top"){
-                final_product_image_top = final_product_image.top - (final_product_image.top - obj.top);
-              }
-              if(obj.position.positionY == "bottom"){
-                final_product_image_top = final_product_image.top + (final_product_image.top - obj.top);
-              }
-            final_product_image.set({
-              left:final_product_image_left,
-              top:final_product_image_top
-            }).setCoords();
-            canvasClone.remove(obj); 
-            canvasClone.add(final_product_image);
-            const finalJsonCreate = setInterval(finalJsonFunc, 500);
-            function finalJsonFunc(){
-              var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
-              var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
-              var temp = cloneJson.objects[obj.index];
-              cloneJson.objects[obj.index] = finalProductImage;
-              cloneJson.objects[cloneJson.objects.length-1] = temp;    
-              finalJsonFile =  JSON.stringify(cloneJson);
-              if(finalJsonFile != undefined){
-                clearInterval(finalJsonCreate);
+
+            removeBg = new Promise((resolve)=>{
+              var config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  "Access-Control-Allow-Origin": "*",
+                  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+                  "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"               
+                },      
+                responseType: 'arraybuffer'   
               }
 
-            }
-          });  
+              axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+obj.image_link,config).then(async res=>{
+                var arrayBufferView = res.data
+                var blob = new Blob([arrayBufferView],{ type: "image/png" });
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL(blob);
+                obj.image_link = imageUrl;    
+                resolve();
+              });         
+            });
+
+          }else{
+            removeBg = new Promise((resolve)=>{
+              resolve();
+            });
+          }
+          removeBg.then(()=>{
+            fabric.Image.fromURL(obj.image_link, async (final_product_image) => {
+              final_product_image._element.crossOrigin = 'Anonymous';
+              if(obj.width >= obj.height){
+                final_product_image.set({
+                  scaleY:obj.height/final_product_image.height,
+                  scaleX:obj.height/final_product_image.height,
+                  layerShowPeriod:obj.layerShowPeriod,
+                  id: obj.id,
+                  angle: obj.angle,
+                  item_name: "final_product_image"
+                }).setCoords();
+      
+              }else{
+                final_product_image.set({
+                  scaleY:obj.width/final_product_image.width,
+                  scaleX:obj.width/final_product_image.width,
+                  layerShowPeriod:obj.layerShowPeriod,
+                  id: obj.id,
+                  angle: obj.angle,
+                  item_name: "final_product_image",
+                  flipX:obj.flipX,
+                  flipY:obj.flipY 
+                }).setCoords();
+              }
+              if(final_product_image.width*final_product_image.scaleX > obj._objects[1].width && final_product_image.height*final_product_image.scaleY > obj._objects[1].height){
+                final_product_image.set({
+                  scaleY:obj._objects[1].height/final_product_image.width,
+                  scaleX:obj._objects[1].width/final_product_image.width,
+                  layerShowPeriod:obj.layerShowPeriod,
+                  id: obj.id,
+                  angle: obj.angle,
+                  item_name: "final_product_image",
+                  left:obj.left,
+                  top:obj.top,
+                  flipX:obj.flipX,
+                  flipY:obj.flipY                
+                }).setCoords();     
+              }
+              final_product_image.setPositionByOrigin(new fabric.Point(obj.left + obj.width*obj.scaleX / 2, obj.top + obj.height*obj.scaleX / 2))
+              
+              //Check image position in the wrapper.
+              var final_product_image_left = final_product_image.left;
+              var final_product_image_top = final_product_image.top;
+      
+                if(obj.position.positionX == "right"){
+                  final_product_image_left = final_product_image.left + (final_product_image.left - obj.left);
+                }
+                if(obj.position.positionX == "left"){
+                  final_product_image_left = final_product_image.left - (final_product_image.left - obj.left);
+                }
+      
+                if(obj.position.positionY == "top"){
+                  final_product_image_top = final_product_image.top - (final_product_image.top - obj.top);
+                }
+                if(obj.position.positionY == "bottom"){
+                  final_product_image_top = final_product_image.top + (final_product_image.top - obj.top);
+                }
+              final_product_image.set({
+                left:final_product_image_left,
+                top:final_product_image_top
+              }).setCoords();
+              canvasClone.remove(obj); 
+              canvasClone.add(final_product_image);
+              const finalJsonCreate = setInterval(finalJsonFunc, 500);
+              function finalJsonFunc(){
+                var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
+                var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
+                var temp = cloneJson.objects[obj.index];
+                cloneJson.objects[obj.index] = finalProductImage;
+                cloneJson.objects[cloneJson.objects.length-1] = temp;    
+                finalJsonFile =  JSON.stringify(cloneJson);
+                if(finalJsonFile != undefined){
+                  clearInterval(finalJsonCreate);
+                }
+
+              }
+            });              
+          });
         }
-      })
+      });
       // start change product image
     });
     const finalImageCreate = setInterval(finalImageFunc, 1000);

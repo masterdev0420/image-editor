@@ -156,7 +156,6 @@
       left() {
         const activeObject = this.canvas.c.getActiveObject();
         if (activeObject) {
-          console.log("aaaaaaaaa")
           activeObject.forEachObject((item) => {
               if(item.type == "image" || item.customType == "extra_product"){
               item.set({
