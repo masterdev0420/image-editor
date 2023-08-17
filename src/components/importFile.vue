@@ -536,43 +536,34 @@ export default {
           imgEl.src = file || this.imgFile;
           document.body.appendChild(imgEl);
           imgEl.onload = () => {
-            if(obj.customType == "extra_product"){
 
-              var tempImage = new this.fabric.Image(imgEl, {
-                id: obj.id,
-                name: obj.name,
-              });
+            var tempImage = new this.fabric.Image(imgEl, {
+              id: obj.id,
+              name: obj.name,
+            });
 
-              var default_image_name = new this.fabric.IText(obj.name, {
-                fontFamily: 'Courier New',
-                fontSize: 20,
-                fontWeight:"bold",
-                fill:"white"
-              });
+            var default_image_name = new this.fabric.IText(obj.name, {
+              fontFamily: 'Courier New',
+              fontSize: 20,
+              fontWeight:"bold",
+              fill:"white"
+            });
 
-              // Set the text's position to the center of the image
-              default_image_name.left = tempImage.left + tempImage.width / 2 - default_image_name.width / 2;
-              default_image_name.top = tempImage.height - 30;
+            // Set the text's position to the center of the image
+            default_image_name.left = tempImage.left + tempImage.width / 2 - default_image_name.width / 2;
+            default_image_name.top = tempImage.height - 30;
 
-              var imgInstance = new fabric.Group([tempImage, default_image_name]);
+            var imgInstance = new fabric.Group([tempImage, default_image_name]);
 
-              imgInstance.set({
-                id: obj.id,
-                name: obj.name,
-                customType:"extra_product",
-                dirty: true
-              });
+            imgInstance.set({
+              id: obj.id,
+              name: obj.name,
+              customType:"extra_product",
+              dirty: true
+            });
 
-              // Call setCoords to update the coordinates of the text
-              imgInstance.setCoords();
-
-            }else{
-              var imgInstance = new this.fabric.Image(imgEl, {
-                id: obj.id,
-                name: obj.name,
-                dirty:true
-              });
-            }
+            // Call setCoords to update the coordinates of the text
+            imgInstance.setCoords();
 
             var rect = new fabric.Rect({
                 height: 0,

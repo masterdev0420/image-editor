@@ -468,7 +468,6 @@ class Editor extends EventEmitter {
                 item_name: "final_product_image"
               }).setCoords();
             }
-            console.log(obj._objects[1].height)
             if(final_product_image.width*final_product_image.scaleX > obj._objects[1].width && final_product_image.height*final_product_image.scaleY > obj._objects[1].height){
               final_product_image.set({
                 scaleY:obj._objects[1].height/final_product_image.width,
