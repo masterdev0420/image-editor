@@ -240,7 +240,7 @@
           </div>
 
           <div class="mt-4" style="height: 30px; margin-right: 15px">
-            <div class="" style="float: left">Alignment</div>
+            <div class="" style="float: left">Align Horizontal/Vertical</div>
             <div class="" style="float: right" v-if="baseAttr.id !== 'productImage' && baseAttr.customType !== 'extra_product'">
               <align-image></align-image>
             </div>
