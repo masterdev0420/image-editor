@@ -209,7 +209,7 @@
               class=""
               style="height: 40px; margin-right: 15px"
             >
-              <div style="float: left">Remove white background</div>
+              <div style="float: left">Remove background</div>
               <div style="float: right">
                 <Switch
                   size="small"
@@ -244,7 +244,7 @@
             <div class="" style="float: right" v-if="baseAttr.id !== 'productImage' && baseAttr.customType !== 'extra_product'">
               <align-image></align-image>
             </div>
-            <div v-if="baseAttr.customType === 'productImage' || baseAttr.id === 'nonBgImage' || baseAttr.customType === 'extra_product'" >
+            <div v-if="baseAttr.customType === 'productImage' || baseAttr.id === 'nonBgImage' && baseAttr.customType === 'extra_product'" >
               <div class="mt-3" style="height:40px;">
                 <div class="" style="float:left;">
                   Alignment

@@ -458,6 +458,7 @@ class Editor extends EventEmitter {
               }).setCoords();
     
             }else{
+              console.log(obj.flipX)
     
               final_product_image.set({
                 scaleY:obj.width/final_product_image.width,
@@ -465,7 +466,9 @@ class Editor extends EventEmitter {
                 layerShowPeriod:obj.layerShowPeriod,
                 id: obj.id,
                 angle: obj.angle,
-                item_name: "final_product_image"
+                item_name: "final_product_image",
+                flipX:obj.flipX,
+                flipY:obj.flipY 
               }).setCoords();
             }
             if(final_product_image.width*final_product_image.scaleX > obj._objects[1].width && final_product_image.height*final_product_image.scaleY > obj._objects[1].height){
@@ -477,7 +480,9 @@ class Editor extends EventEmitter {
                 angle: obj.angle,
                 item_name: "final_product_image",
                 left:obj.left,
-                top:obj.top
+                top:obj.top,
+                flipX:obj.flipX,
+                flipY:obj.flipY                
               }).setCoords();     
             }
             final_product_image.setPositionByOrigin(new fabric.Point(obj.left + obj.width*obj.scaleX / 2, obj.top + obj.height*obj.scaleX / 2))
@@ -485,7 +490,6 @@ class Editor extends EventEmitter {
             //Check image position in the wrapper.
             var final_product_image_left = final_product_image.left;
             var final_product_image_top = final_product_image.top;
-            console.log(obj)        
     
               if(obj.position.positionX == "right"){
                 final_product_image_left = final_product_image.left + (final_product_image.left - obj.left);
@@ -506,25 +510,30 @@ class Editor extends EventEmitter {
             }).setCoords();
             canvasClone.remove(obj); 
             canvasClone.add(final_product_image);
-    
+            const finalJsonCreate = setInterval(finalJsonFunc, 500);
+            function finalJsonFunc(){
+              var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
+              var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
+              var temp = cloneJson.objects[obj.index];
+              cloneJson.objects[obj.index] = finalProductImage;
+              cloneJson.objects[cloneJson.objects.length-1] = temp;    
+              finalJsonFile =  JSON.stringify(cloneJson);
+              if(finalJsonFile != undefined){
+                clearInterval(finalJsonCreate);
+              }
+
+            }
           });  
-          setTimeout(() => {
-            var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
-            var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
-            var temp = cloneJson.objects[obj.index];
-            cloneJson.objects[obj.index] = finalProductImage;
-            cloneJson.objects[cloneJson.objects.length-1] = temp;    
-            finalJsonFile =  JSON.stringify(cloneJson);
-          }, 2000);        
         }
       })
       // start change product image
     });
+    const finalImageCreate = setInterval(finalImageFunc, 1000);
 
-    const intervalId = setInterval(myFunction, 1000);
-    function myFunction(){
-      if((finalJsonFile != undefined)){
-      canvasClone.loadFromJSON(finalJsonFile, async () => {
+
+    function finalImageFunc(){
+      if(finalJsonFile != undefined){
+        canvasClone.loadFromJSON(finalJsonFile, async () => {
           canvasClone.renderAll.bind(canvasClone);
           const workspace = canvasClone.getObjects().find((item) => item.id === 'workspace');
           const { left, top, width, height } = workspace;                  
@@ -544,9 +553,10 @@ class Editor extends EventEmitter {
           canvasClone.requestRenderAll();
           if(imgUrl != null){
             document.getElementById("preview"+(index)).src = imgUrl;
+            clearInterval(finalImageCreate);             
           }
         });          
-        clearInterval(intervalId);
+ 
       }
     }
 

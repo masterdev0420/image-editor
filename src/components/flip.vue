@@ -5,7 +5,7 @@
     <div style="width:28.3%">
       <div class="box attr-item">
         <Tooltip :content="'flip.x'">
-          <Button  @click="flip('Y')" type="text">
+          <Button  @click="flip('X')" type="text">
             <svg
               t="1650443094178"
               class="icon"
@@ -32,7 +32,7 @@
           </Button>
         </Tooltip>
         <Tooltip :content="'flip.y'">
-          <Button  @click="flip('X')" type="text">
+          <Button  @click="flip('Y')" type="text">
             <svg
               t="1650443104385"
               class="icon"
