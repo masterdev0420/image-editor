@@ -241,14 +241,11 @@
 
           <div class="mt-4" style="height: 30px; margin-right: 15px">
             <div class="" style="float: left">Align Horizontal/Vertical</div>
-            <div class="" style="float: right" v-if="baseAttr.id !== 'productImage' && baseAttr.customType !== 'extra_product'">
+            <div class="" style="float: right" v-if="baseAttr.id === 'nonBgImage' && baseAttr.id !== 'productImage'">
               <align-image></align-image>
             </div>
-            <div v-if="baseAttr.customType === 'productImage' || baseAttr.id === 'nonBgImage' && baseAttr.customType === 'extra_product'" >
+            <div v-if="baseAttr.id === 'nonBgImage' && baseAttr.customType === 'extra_product'" >
               <div class="mt-3" style="height:40px;">
-                <div class="" style="float:left;">
-                  Alignment
-                </div>           
                 <div class="" style="float:right;">
                   <align-product :position="[this.baseAttr.position]"></align-product>
                 </div>

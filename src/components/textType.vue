@@ -235,7 +235,7 @@
           <!-- -------------------  Text alignment  ---------------- -->
         <div class="mt-3" style="height:40px;">
           <div class="" style="float:left;">
-            Alignment
+            Align Horizontal/Vertical
           </div>
 
           <div class="" style="float:right;">
