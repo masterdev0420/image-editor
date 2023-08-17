@@ -241,16 +241,12 @@
 
           <div class="mt-4" style="height: 30px; margin-right: 15px">
             <div class="" style="float: left">Align Horizontal/Vertical</div>
-            <div class="" style="float: right" v-if="baseAttr.id === 'nonBgImage' && baseAttr.id !== 'productImage'">
+            <div class="" style="float: right" v-if="baseAttr.customType == 'image'">
               <align-image></align-image>
             </div>
-            <div v-if="baseAttr.id === 'nonBgImage' && baseAttr.customType === 'extra_product'" >
-              <div class="mt-3" style="height:40px;">
-                <div class="" style="float:right;">
-                  <align-product :position="[this.baseAttr.position]"></align-product>
-                </div>
-              </div>              
-            </div>
+            <div class="" style="float: right" v-if="baseAttr.customType === 'extra_product' || baseAttr.customType === 'productImage'">
+              <align-product :position="[this.baseAttr.position]"></align-product>
+            </div>            
           </div>
         </div>
 
@@ -1049,7 +1045,10 @@ export default {
       var imageScaleX = this.canvas.c.getActiveObject()._objects[1].scaleX;
       var imageScaleY = this.canvas.c.getActiveObject()._objects[1].scaleY;
 
+
       var item_name = this.canvas.c.getActiveObject().item_name;
+      var flipX = this.canvas.c.getActiveObject().flipX;
+      var flipY = this.canvas.c.getActiveObject().flipY;
       var angle = this.canvas.c.getActiveObject().angle;
       var opacity = this.canvas.c.getActiveObject().opacity;
       var layerShowPeriod = this.canvas.c.getActiveObject().layerShowPeriod;            
@@ -1145,15 +1144,13 @@ export default {
           objectCaching: false,
           position:position,
           originPoistion:originPoistion,
+          flipX:flipX,
+          flipY:flipY
         });
         group.setControlsVisibility({
           tl: false, // Hide top left point
           // tr: false, // Hide top right point
           bl: false, // Hide bottom left point
-          mt: false, // Hide middle top point
-          ml: false, // Hide middle left point
-          mr: false, // Hide middle right point
-          mb: false, // Hide middle bottom point
           mtr: false, // Hide rotation control button
         });       
         var objects = this.canvas.c.getObjects();

@@ -634,12 +634,16 @@ export default {
           id: uuid(),
           item_name:name,
           nonBgImageState:false,
+          customType:"image",
           layerShowPeriod:{
             mode:'',
             startDate:'',
             endDate:''
           },
-       
+          position:{
+            positionX:"xCenter",
+            positionY:"yCenter"
+          },
         }).setCoords();
         this.canvas.c.add(imgInstance);
         this.canvas.c.setActiveObject(imgInstance);
