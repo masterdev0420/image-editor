@@ -178,7 +178,9 @@ export default {
         position:{
           positionX:"left",
           positionY:"top"
-        },                
+        },    
+        objectCaching: false,
+
       });
       this.canvas.c.add(circle);
       this.canvas.c.centerObject(circle);
@@ -203,7 +205,9 @@ export default {
         position:{
           positionX:"left",
           positionY:"top"
-        },                
+        },         
+        objectCaching: false,
+
       });
       this.canvas.c.add(rect);
       this.canvas.c.centerObject(rect);
