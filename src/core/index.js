@@ -438,9 +438,11 @@ class Editor extends EventEmitter {
                 },      
                 responseType: 'arraybuffer'   
               }
+
               axios.get("https://images.tidy.shopping/removebg"+"?imgurl="+obj.image_link,config).then(async res=>{
-                var arrayBufferView = res.data
+                var arrayBufferView = res.data;
                 var blob = new Blob([arrayBufferView],{ type: "image/png" });
+                console.log(blob)
                 var urlCreator = window.URL || window.webkitURL;
                 var imageUrl = urlCreator.createObjectURL(blob);
                 obj.image_link = imageUrl;
@@ -535,6 +537,7 @@ class Editor extends EventEmitter {
       });
       // start change product image
     });
+    
     const finalImageCreate = setInterval(finalImageFunc, 1000);
 
     function finalImageFunc(){
