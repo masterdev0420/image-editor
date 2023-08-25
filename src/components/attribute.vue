@@ -1083,17 +1083,29 @@ export default {
           scaleX: tempImageScaleX,
           scaleY: tempImageScaleY
         });
-
-        var text = new this.fabric.IText(item_name, {
-          fontFamily: 'Courier New',
-          fontSize: 20,
-          fontWeight:"bold",
-          fill:"white",
-          left:textLeft,
-          top:textTop,
-          scaleX:textScaleX,
-          scralY:textScaleY,                
-        });          
+        if(bgState != "productImage"){
+          var text = new this.fabric.IText(item_name, {
+            fontFamily: 'Courier New',
+            fontSize: 20,
+            fontWeight:"bold",
+            fill:"black",
+            left:textLeft,
+            top:textTop,
+            scaleX:textScaleX,
+            scralY:textScaleY,                
+          });          
+        }else{
+          var text = new this.fabric.IText(item_name, {
+            fontFamily: 'Courier New',
+            fontSize: 20,
+            fontWeight:"bold",
+            fill:"white",
+            left:textLeft,
+            top:textTop,
+            scaleX:textScaleX,
+            scralY:textScaleY,                
+          });             
+        }
 
         var imgInstance = new this.fabric.Group([tempImage, text]);
         imgInstance.set({
