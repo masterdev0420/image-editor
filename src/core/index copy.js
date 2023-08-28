@@ -380,10 +380,12 @@ class Editor extends EventEmitter {
     }
   }
   
-  async changeProductImageLists(final_product_image,tags,index){
+  changeProductImageLists(final_product_image,tags,index){
+    var productImageIndex = this.getJson().objects.findIndex(el=>{
+      return el.customType === "productImage";
+    });
     var jsonFile = JSON.stringify(this.changeTags(this.getJson(),tags,final_product_image));
     var canvas = document.createElement("CANVAS");
-    var finalJsonFile;
     canvas.id = "tempCanvas";
     canvas.style.display = "none";
     var canvasClone = new fabric.Canvas("tempCanvas",{
@@ -395,38 +397,9 @@ class Editor extends EventEmitter {
     canvasClone.loadFromJSON(jsonFile, async () => {
       canvasClone.renderAll.bind(canvasClone);
       this.checkLayerPeriod(canvasClone.getObjects());
-      // add extra image 
-      var product_extra_image = canvasClone.getObjects().filter((el,index)=>{
-        var keys = Object.keys(final_product_image);
-        var flag = false;
-        keys.forEach(arg=>{
-          if(arg == el.item_name){
-            el.extra_product_link = final_product_image[el.item_name]
-            flag = true;
-            return;
-          }
-        })
-
-        if(flag == true){
-          el.index = index;
-          return el.index;
-        }
-      });
-      const productImage = canvasClone.getObjects().find((item,index) => {
-        if(item.id === "productImage" || item.id == "nonBgImage"){
-          item.index = index;
-          return item;
-        }
-      });   
-      const product_images = [productImage, ...product_extra_image];
-
-      // productImage.forEach(obj=>{
-        
-      // })
-      // start change product image
-
-      if(productImage.bgState === true){
-
+      const productImage = canvasClone.getObjects().find((item) => item.id === "productImage" || item.id == "nonBgImage");
+      var a = [100,200,300];
+      a.forEach(async (pos)=>{
         var config = {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -442,94 +415,63 @@ class Editor extends EventEmitter {
           var blob = new Blob([arrayBufferView],{ type: "image/png" });
           var urlCreator = window.URL || window.webkitURL;
           var imageUrl = urlCreator.createObjectURL(blob);
-          final_product_image.image_link = imageUrl;     
+          final_product_image.image_link = imageUrl;   
+          fabric.Image.fromURL(final_product_image.image_link, async (final_product_image) => {
+            final_product_image._element.crossOrigin = 'Anonymous';
+            if(productImage.width >= productImage.height){
+              
+              final_product_image.set({
+                scaleY:productImage.height/final_product_image.height,
+                scaleX:productImage.height/final_product_image.height,
+                layerShowPeriod:productImage.layerShowPeriod,
+                id: productImage.id,
+                angle: productImage.angle,
+                item_name: "final_product_image"
+
+              }).setCoords();
+    
+            }else{
+    
+              final_product_image.set({
+                scaleY:productImage.width/final_product_image.width,
+                scaleX:productImage.width/final_product_image.width,
+                layerShowPeriod:productImage.layerShowPeriod,
+                id: productImage.id,
+                angle: productImage.angle,
+                item_name: "final_product_image"
+              }).setCoords();        
+    
+            }
+    
+            if(final_product_image.width*final_product_image.scaleX > productImage._objects[1].width && final_product_image.height*final_product_image.scaleY > productImage._objects[1].height){
+              final_product_image.set({
+                scaleY:productImage._objects[1]._element.naturalHeight/final_product_image.width,
+                scaleX:productImage._objects[1]._element.naturalWidth/final_product_image.width,
+                layerShowPeriod:productImage.layerShowPeriod,
+                id: productImage.id,
+                angle: productImage.angle,
+                item_name: "final_product_image"
+              }).setCoords();     
+            }
+            productImage.left = productImage.left + pos;
+            final_product_image.setPositionByOrigin(new fabric.Point(productImage.left + productImage.width*productImage.scaleX / 2, productImage.top + productImage.height*productImage.scaleX / 2), 'center', 'center')
+            canvasClone.remove(productImage); 
+            canvasClone.add(final_product_image);
+
+          });              
         });
-      }
-
-      fabric.Image.fromURL(final_product_image.image_link, async (final_product_image) => {
-        final_product_image._element.crossOrigin = 'Anonymous';
-        if(productImage.width >= productImage.height){
-          
-          final_product_image.set({
-            scaleY:productImage.height/final_product_image.height,
-            scaleX:productImage.height/final_product_image.height,
-            layerShowPeriod:productImage.layerShowPeriod,
-            id: productImage.id,
-            angle: productImage.angle,
-            item_name: "final_product_image"
-          }).setCoords();
-
-        }else{
-
-          final_product_image.set({
-            scaleY:productImage.width/final_product_image.width,
-            scaleX:productImage.width/final_product_image.width,
-            layerShowPeriod:productImage.layerShowPeriod,
-            id: productImage.id,
-            angle: productImage.angle,
-            item_name: "final_product_image"
-          }).setCoords();
-        }
-
-        if(final_product_image.width*final_product_image.scaleX > productImage._objects[1].width && final_product_image.height*final_product_image.scaleY > productImage._objects[1].height){
-          final_product_image.set({
-            scaleY:productImage._objects[1]._element.naturalHeight/final_product_image.width,
-            scaleX:productImage._objects[1]._element.naturalWidth/final_product_image.width,
-            layerShowPeriod:productImage.layerShowPeriod,
-            id: productImage.id,
-            angle: productImage.angle,
-            item_name: "final_product_image",
-            left:productImage.left,
-            top:productImage.top
-          }).setCoords();     
-        }
-        final_product_image.setPositionByOrigin(new fabric.Point(productImage.left + productImage.width*productImage.scaleX / 2, productImage.top + productImage.height*productImage.scaleX / 2))
-        
-        //Check image position in the wrapper.
-        var final_product_image_left = final_product_image.left;
-        var final_product_image_top = final_product_image.top;        
-        if(productImage.width > productImage.height){
-
-          if(productImage.position.positionX == "right"){
-            final_product_image_left = final_product_image.left + (final_product_image.left - productImage.left);
-          }
-          if(productImage.position.positionX == "left"){
-            final_product_image_left = final_product_image.left - (final_product_image.left - productImage.left);
-          }
-
-        }
-
-        if(productImage.width < productImage.height){
-          if(productImage.position.positionY == "top"){
-            final_product_image_top = final_product_image.top - (final_product_image.top - productImage.top);
-          }
-          if(productImage.position.positionY == "bottom"){
-            final_product_image_top = final_product_image.top + (final_product_image.top - productImage.top);
-          }
-        }
-        final_product_image.set({
-          left:final_product_image_left,
-          top:final_product_image_top
-        }).setCoords();
-        canvasClone.remove(productImage); 
-        canvasClone.add(final_product_image);
-
-      });  
+      
+      });
+      
       setTimeout(() => {
         var cloneJson = canvasClone.toJSON(['id','bgState','originPoistion','fontLists','strokeLabel','ttf_base64','fontFamilyList','name','texthandle','scaling','item_name','position','layerShowPeriod','customType', 'gradientAngle', 'selectable', 'hasControls',"fillState","borderState"])
         var finalProductImage = cloneJson.objects[cloneJson.objects.length-1];
-        var temp = cloneJson.objects[productImage.index];
-        cloneJson.objects[productImage.index] = finalProductImage;
+        var temp = cloneJson.objects[productImageIndex];
+        cloneJson.objects[productImageIndex] = finalProductImage;
         cloneJson.objects[cloneJson.objects.length-1] = temp;    
-        finalJsonFile =  JSON.stringify(cloneJson);
-      }, 2000);          
-      // start change product image
-    });
+        var jsonFile =  JSON.stringify(cloneJson); 
 
-    const intervalId = setInterval(myFunction, 1000);
-    function myFunction(){
-      if((finalJsonFile != undefined)){
-        canvasClone.loadFromJSON(finalJsonFile, async () => {
+        canvasClone.loadFromJSON(jsonFile, async () => {
           canvasClone.renderAll.bind(canvasClone);
           const workspace = canvasClone.getObjects().find((item) => item.id === 'workspace');
           const { left, top, width, height } = workspace;                  
@@ -549,10 +491,11 @@ class Editor extends EventEmitter {
           canvasClone.requestRenderAll();
           document.getElementById("preview"+(index)).src = imgUrl;
         });          
-        clearInterval(intervalId);
-      }
-    }
-
+          
+      }, 10000);  
+        
+        
+    });
   }
 
 }
