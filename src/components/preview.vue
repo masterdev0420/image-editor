@@ -81,30 +81,30 @@ export default {
     showPreview(){
         this.loaderActive = true;
         getShortTags().then((tags)=>{
-            var a = getPreviewImage(this.keyword).then(async (res)=>{
-                let promise = new Promise((resolve, reject) => {
-                    this.product_images = res.data;
+            
+            getPreviewImage(this.keyword).then(async (res)=>{
+                this.product_images = res.data;
 
-                    this.product_images.forEach((item,index)=>{
+                var promises = this.product_images.map((item,index)=>{
+                    return new Promise((resolve, reject)=>{
                         var first_product_image = item;
                         if(first_product_image != null){
-                            this.canvas.editor.changeProductImageLists(first_product_image,tags.data,index);
+                            var result = this.canvas.editor.changeProductImageLists(first_product_image,tags.data,index);
+                            result.then(()=>{
+                                resolve();
+                            })
                         }
                         if(index == this.product_images.length-1){
-                            return "done";
+                            resolve();
                         }
-                    });        
+                    })
 
-                });     
-                let result = await promise;               
-                return result;
-
-                // this.loaderActive = await false
+                });   
+                Promise.all(promises).then(()=>{
+                    this.loaderActive = false;
+                });
             });   
 
-            setTimeout(() => {
-                this.loaderActive = false
-            }, 7000);
         });
     },
 
