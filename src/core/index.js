@@ -426,7 +426,7 @@ class Editor extends EventEmitter {
           return new Promise((resolve, reject) => {
             var index = obj.index;
             var removeBg;
-            if(obj.bgState === "nonBgImage"){
+            if(obj.bgState === "nonBgImage" || obj.bgState === "nonAndTrimImage" || obj.bgState === "trimBgImage"){
               removeBg = new Promise((resolve)=>{
                 var config = {
                   headers: {
