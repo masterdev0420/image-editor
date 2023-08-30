@@ -157,7 +157,7 @@
         const activeObject = this.canvas.c.getActiveObject();
         if (activeObject) {
           activeObject.forEachObject((item) => {
-              if(item.type == "image" || item.customType == "extra_product"){
+            if(item.customType == "productImage" || item.customType == "extra_product"){
               item.set({
                   left: -(activeObject.width/2)
               });            
@@ -177,7 +177,7 @@
           const activeSelection = activeObject;
           const activeObjectLeft = activeObject.width / 2;
           activeSelection.forEachObject((item) => {
-            if(item.type == "image" || item.customType == "extra_product"){
+            if(item.customType == "productImage" || item.customType == "extra_product"){
               item.set({
                   left: (activeObjectLeft - (item.width)*item.scaleX),
               });    
@@ -196,7 +196,7 @@
         if (activeObject && activeObject._objects[1].width!=activeObject.width) {
           const activeSelection = activeObject;
           activeSelection.forEachObject((item) => {
-            if(item.type == "image" || item.customType == "extra_product"){
+            if(item.customType == "productImage" || item.customType == "extra_product"){
               item.set({
                   left: 0 - (item.width * item.scaleX) / 2,
               });
@@ -215,7 +215,7 @@
         if (activeObject) {
           const activeSelection = activeObject;
           activeSelection.forEachObject((item) => {
-            if(item.type == "image" || item.customType == "extra_product"){
+            if(item.customType == "productImage" || item.customType == "extra_product"){
               item.set({
                   top: 0 - (item.height * item.scaleY) / 2,
               });
@@ -234,7 +234,8 @@
         const activeSelection = activeObject;
         const activeObjectTop = -(activeObject.height / 2);
           activeSelection.forEachObject((item) => {
-            if(item.type == "image" || item.customType == "extra_product"){
+            console.log(item)
+            if(item.customType == "productImage" || item.customType == "extra_product"){
               item.set({
                   top: activeObjectTop,
               });
@@ -255,7 +256,7 @@
           const activeSelection = activeObject;
           const activeObjectTop = activeObject.height / 2;
           activeSelection.forEachObject((item) => {
-            if(item.type == "image" || item.customType == "extra_product"){
+            if(item.customType == "productImage" || item.customType == "extra_product"){
               item.set({
                 top: activeObjectTop - item.height*item.scaleY,
               });

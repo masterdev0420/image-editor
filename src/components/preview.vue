@@ -84,7 +84,7 @@ export default {
             
             getPreviewImage(this.keyword).then(async (res)=>{
                 this.product_images = res.data;
-
+                console.log(tags)
                 var promises = this.product_images.map((item,index)=>{
                     return new Promise((resolve, reject)=>{
                         var first_product_image = item;

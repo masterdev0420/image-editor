@@ -227,7 +227,7 @@
               style="height: 40px; margin-right: 15px"
             >
 
-            <div style="float: left">Trim background</div>
+            <div style="float: left">Trim empty space from margins</div>
             <div style="float: right">
             <Switch
               size="small"
@@ -391,6 +391,7 @@ export default {
           label: "except",
         },
       ],
+      changeProductImageState:false,
       restrictionState: true,
       //layer restriction
       isLock: false,
@@ -472,7 +473,10 @@ export default {
   created() {
     this.canvas.c.on("object:scaling", (opt) => {
       var activeObject = this.canvas.c.getActiveObject();
-    
+      if(opt.transform.corner == "mr" || opt.transform.corner == "mt" || opt.transform.corner == "ml" || opt.transform.corner == "mb"){
+        opt.target.lockScalingFlip = true;
+      }
+
       if(opt.transform.corner == "br"){
         var target = opt.target;
         var pointer = this.canvas.c.getPointer(opt.e);          
@@ -563,6 +567,7 @@ export default {
           this.fontAttr.selected_fontfamily = textObj.fontFamily;
 
           if(activeObject.customType == "productImage" || activeObject.customType == "extra_product"){
+            this.changeProductImageState = true;
             switch(activeObject.bgState){
               case "productImage" : 
                 this.nonBgImageState = false;
@@ -581,6 +586,7 @@ export default {
                 this.trimImageState = true;                               
                 break;
             }
+            this.changeProductImageState = false;
           }
 
           // //layerRestricion
@@ -595,6 +601,7 @@ export default {
   },
 
   mounted() {
+
     // setInterval(() => {
     //   this.canvas.editor.checkLayerPeriod();
     // }, 1000);
@@ -621,7 +628,6 @@ export default {
       var rectH = activeObject.height;
       var imageH = activeObject._objects[1].height;
       var image_scale_y = rectH / imageH;
-
       if (activeObject.width <= activeObject.height) {
         activeObject._objects[1]
           .set({
@@ -640,7 +646,7 @@ export default {
             left:
               0 -
               (activeObject._objects[1].width *
-                activeObject._objects[1].scaleX) /
+                activeObject._objects[1].scaleY) /
                 2,
             top: 0 - (activeObject._objects[1].height * image_scale_y) / 2,
           });
@@ -651,99 +657,98 @@ export default {
       this.canvas.c.renderAll();
     },
     fixTextPosition(){
-          const activeObject =this.canvas.c.getActiveObject();
-         
-          if(activeObject.customType == "productImage" || activeObject.customType == "extra_product"){
+      const activeObject =this.canvas.c.getActiveObject();
+      
+      if(activeObject.customType == "productImage" || activeObject.customType == "extra_product"){
+        const w = activeObject.width * activeObject.scaleX,
+        h = activeObject.height * activeObject.scaleY
 
-            const w = activeObject.width * activeObject.scaleX,
-            h = activeObject.height * activeObject.scaleY
+        activeObject.set({
+          'height'     : h,
+          'width'      : w,
+          'scaleX'     : 1,
+          'scaleY'     : 1,
+        });
+        
+        activeObject._objects[0].set({
+          'height'     : h,
+          'width'      : w,
+          'scaleX'     : 1,
+          'scaleY'     : 1,
+          "left":0 - (activeObject.width) / 2,
+          "top":0 - (activeObject.height) / 2
+        });
+        var rectW = activeObject.width;
+        var textW = activeObject._objects[1].width ;           
+        var textS = rectW/textW;
+        if(textW>rectW){
+          // activeObject.set({
+          //     position:{
+          //       "positionX":"left",
+          //       "positionY":activeObject.position.positionY
+          //     }
+          // });									
+          // activeObject._objects[1].set("scaleX",textS);
+          // activeObject._objects[1].set("scaleY",textS);			
+        }else{
 
+          if(activeObject.originPoistion == "right"){
             activeObject.set({
-              'height'     : h,
-              'width'      : w,
-              'scaleX'     : 1,
-              'scaleY'     : 1,
-            });
-            
-            activeObject._objects[0].set({
-              'height'     : h,
-              'width'      : w,
-              'scaleX'     : 1,
-              'scaleY'     : 1,
-              "left":0 - (activeObject.width) / 2,
-              "top":0 - (activeObject.height) / 2
-            });
-            var rectW = activeObject.width;
-            var textW = activeObject._objects[1].width ;           
-            var textS = rectW/textW;
-            if(textW>rectW){
-            //   activeObject.set({
-            //       position:{
-            //         "positionX":"left",
-            //         "positionY":activeObject.position.positionY
-            //       }
-            //   });									
-            //   activeObject._objects[1].set("scaleX",textS);
-            //   activeObject._objects[1].set("scaleY",textS);			
-            }else{
+                position:{
+                  "positionX":"right",
+                  "positionY":activeObject.position.positionY
+                }
+            });                      
+          }		              
+          if(activeObject.originPoistion == "xCenter"){
+            activeObject.set({
+                position:{
+                  "positionX":"xCenter",
+                  "positionY":activeObject.position.positionY
+                }
+            });                
+          }
 
-              if(activeObject.originPoistion == "right"){
-                activeObject.set({
-                    position:{
-                      "positionX":"right",
-                      "positionY":activeObject.position.positionY
-                    }
-                });                      
-              }		              
-              if(activeObject.originPoistion == "xCenter"){
-                activeObject.set({
-                    position:{
-                      "positionX":"xCenter",
-                      "positionY":activeObject.position.positionY
-                    }
-                });                
-              }
-	
-              if(textS <= 1){
-                activeObject._objects[1].set("scaleX",textS).setCoords();
-                activeObject._objects[1].set("scaleY",textS).setCoords();	
-              }			
-            }
-            var position = this.canvas.editor.getPosition(activeObject);
-            if(activeObject.position.positionX == "right"){
-              activeObject._objects[1].set({
-                "left":position.left,
-                "top":position.top
-              });				
-            }
+          if(textS < 1){
+            activeObject._objects[1].set("scaleX",textS).setCoords();
+            activeObject._objects[1].set("scaleY",textS).setCoords();	
+          }			
+        }
+        var position = this.canvas.editor.getPosition(activeObject);
+        if(activeObject.position.positionX == "right"){
+          activeObject._objects[1].set({
+            "left":position.left,
+            "top":position.top
+          });				
+        }
 
-            if(activeObject.position.positionX == "left"){
-              activeObject._objects[1].set({
-                "left":position.left,
-                "top":position.top
-              });				
-            }	
+        if(activeObject.position.positionX == "left"){
+          activeObject._objects[1].set({
+            "left":position.left,
+            "top":position.top
+          });				
+        }	
 
-            if(activeObject.position.positionX == "xCenter"){
-              activeObject._objects[1].set({
-                "left":position.left,
-                "top":position.top
-              });				
-            }			
-            if(activeObject.position.positionY == "top"){
-              activeObject._objects[1].top = position.top
-            }
+        if(activeObject.position.positionX == "xCenter"){
+          activeObject._objects[1].set({
+            "left":position.left,
+            "top":position.top
+          });				
+        }			
+        if(activeObject.position.positionY == "top"){
+          activeObject._objects[1].top = position.top
+        }
 
-            if(activeObject.position.positionY == "bottom"){
-              activeObject._objects[1].top = position.top
-            }	
+        if(activeObject.position.positionY == "bottom"){
+          activeObject._objects[1].top = position.top
+        }	
 
-            if(activeObject.position.positionY == "yCenter"){
-              activeObject._objects[1].top = position.top
-            }
-           this.canvas.c.renderAll();
-          }            
-        },        
+        if(activeObject.position.positionY == "yCenter"){
+          activeObject._objects[1].top = position.top
+        }
+        this.canvas.c.renderAll();
+      }            
+    },        
         
     setLayerShowPeriod() {
       var state = this.baseAttr.layerShowPeriod;
@@ -1048,6 +1053,7 @@ export default {
 
       var imageLeft = this.canvas.c.getActiveObject()._objects[1].left;
       var imageTop = this.canvas.c.getActiveObject()._objects[1].top;
+
       var imageScaleX = this.canvas.c.getActiveObject()._objects[1].scaleX;
       var imageScaleY = this.canvas.c.getActiveObject()._objects[1].scaleY;
 
@@ -1077,6 +1083,7 @@ export default {
 
         var tempImage = new this.fabric.Image(imgEl, {
           id: id,
+          name: item_name,
           item_name: item_name,
           left: tempImageLeft,
           top: tempImageTop,
@@ -1111,12 +1118,13 @@ export default {
         imgInstance.set({
           id: id,
           customType:customType,
-          item_name: item_name,
+          item_name: item_name, 
           left: imageLeft,
           top: imageTop,
           scaleX: imageScaleX,
           scaleY: imageScaleY,
           opacity: opacity,
+          dirty: true
         });          
 
         var rect = new fabric.Rect({
@@ -1152,7 +1160,6 @@ export default {
         });
         group.setControlsVisibility({
           tl: false, // Hide top left point
-          // tr: false, // Hide top right point
           bl: false, // Hide bottom left point
           mtr: false, // Hide rotation control button
         });       
@@ -1166,8 +1173,9 @@ export default {
             return el.item_name == this.canvas.c.getActiveObject().item_name;
           });          
         }
+
         productIndex = productIndex + 1;
-        this.canvas.c.remove(this.canvas.c.getActiveObjects()[0]);
+        this.canvas.c.remove(this.canvas.c.getActiveObject());
         this.canvas.c.add(group);
         this.canvas.c.setActiveObject(group);
 
@@ -1179,38 +1187,44 @@ export default {
         imgEl.remove();
         this.canvas.c.renderAll();
         this.controlProductImage();
+        this.fixTextPosition();
         
       };
     },
   },
   watch: {
     nonBgImageState() {
-      if(this.trimImageState == true && this.nonBgImageState == true){
-        this.insertEmpty(trimandremove, "nonAndTrimImage");
+      if(this.changeProductImageState == false){
+        if(this.trimImageState == true && this.nonBgImageState == true){
+          this.insertEmpty(trimandremove, "nonAndTrimImage");
+        }
+        if(this.trimImageState == false && this.nonBgImageState == true){
+          this.insertEmpty(nonBgImage, "nonBgImage");
+        } 
+        if(this.trimImageState == true && this.nonBgImageState == false){
+          this.insertEmpty(trimImage, "trimBgImage");
+        }    
+        if(this.trimImageState == false && this.nonBgImageState == false){
+          this.insertEmpty(productImage, "productImage");
+        } 
       }
-      if(this.trimImageState == false && this.nonBgImageState == true){
-        this.insertEmpty(nonBgImage, "nonBgImage");
-      } 
-      if(this.trimImageState == true && this.nonBgImageState == false){
-        this.insertEmpty(trimImage, "trimBgImage");
-      }    
-      if(this.trimImageState == false && this.nonBgImageState == false){
-        this.insertEmpty(productImage, "productImage");
-      } 
+
     },
     trimImageState(){
-      if(this.trimImageState == true && this.nonBgImageState == true){
-        this.insertEmpty(trimandremove, "nonAndTrimImage");
+      if(this.changeProductImageState == false){
+        if(this.trimImageState == true && this.nonBgImageState == true){
+          this.insertEmpty(trimandremove, "nonAndTrimImage");
+        }
+        if(this.trimImageState == false && this.nonBgImageState == true){
+          this.insertEmpty(nonBgImage, "nonBgImage");
+        } 
+        if(this.trimImageState == true && this.nonBgImageState == false){
+          this.insertEmpty(trimImage, "trimBgImage");
+        }    
+        if(this.trimImageState == false && this.nonBgImageState == false){
+          this.insertEmpty(productImage, "productImage");
+        }         
       }
-      if(this.trimImageState == false && this.nonBgImageState == true){
-        this.insertEmpty(nonBgImage, "nonBgImage");
-      } 
-      if(this.trimImageState == true && this.nonBgImageState == false){
-        this.insertEmpty(trimImage, "trimBgImage");
-      }    
-      if(this.trimImageState == false && this.nonBgImageState == false){
-        this.insertEmpty(productImage, "productImage");
-      }         
     }
   },
 };

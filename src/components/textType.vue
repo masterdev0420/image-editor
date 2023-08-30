@@ -726,8 +726,8 @@ export default {
           
           textObject.clipPath = clipRect;
           this.canvas.c.renderAll();  
-
-        },      
+          textObject.clipPath = "";
+        },
         //<!---------------- handle long text -------------->
         changeHandleLongText(evt){
           var activeObject = this.canvas.c.getActiveObject()._objects[1];
@@ -912,6 +912,7 @@ export default {
 
           this.fontAttr[key] = evt;
           activeObject && activeObject.set(key, evt);
+          this.fixTextPosition();
           this.changeHandleLongText(this.fontAttr.selected_text_manage_type);      
         },           
     }

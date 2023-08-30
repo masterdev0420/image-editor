@@ -176,7 +176,7 @@ export default {
       this.insertProductImage(productImage,{
         id:"productImage",
         name:"Default Image",
-        item_name:"Default Image",
+        item_name:"productImage",
         image_url:"",
         customType:"productImage"
       });
@@ -552,9 +552,8 @@ export default {
             // Set the text's position to the center of the image
             default_image_name.left = tempImage.left + tempImage.width / 2 - default_image_name.width / 2;
             default_image_name.top = tempImage.height - 30;
-
             var imgInstance = new fabric.Group([tempImage, default_image_name]);
-
+            
             imgInstance.set({
               id: obj.id,
               name: obj.name,
@@ -566,12 +565,12 @@ export default {
             imgInstance.setCoords();
 
             var rect = new fabric.Rect({
-                height: 0,
-                width: 0,
-                fill: '',
-                strokeWidth:0,
-                opacity: 100,
-                id:"virtural",
+              height: 0,
+              width: 0,
+              fill: '',
+              strokeWidth:0,
+              opacity: 100,
+              id:"virtural",
             });      
             var group = new fabric.Group([rect, imgInstance]);
             group.set({
