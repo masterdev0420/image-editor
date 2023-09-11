@@ -572,6 +572,7 @@ export default {
               opacity: 100,
               id:"virtural",
             });      
+            
             var group = new fabric.Group([rect, imgInstance]);
             group.set({
               id: obj.id,

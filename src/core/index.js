@@ -447,7 +447,8 @@ class Editor extends EventEmitter {
                     var imageUrl = urlCreator.createObjectURL(blob);
                     obj.image_link = imageUrl;
                     resolve();
-                  });         
+                  });
+
                 });
     
               }else{
